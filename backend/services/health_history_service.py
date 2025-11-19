@@ -28,7 +28,7 @@ def save_health_history(history: Dict) -> None:
 def add_health_record(patient_id: str, vitals: Dict) -> None:
     """
     Add a health record for a patient
-    Only saves if last record is > 1 minute old
+    Only saves if last record is > 1 hour old
     """
     history = load_health_history()
     
@@ -38,17 +38,17 @@ def add_health_record(patient_id: str, vitals: Dict) -> None:
     now = datetime.now()
     current_time = now.isoformat()
     
-    # Check if we should add a new record (every minute)
+    # Check if we should add a new record (hourly)
     patient_records = history[patient_id]
     should_add = True
     
     if patient_records:
         last_record = patient_records[-1]
         last_time = datetime.fromisoformat(last_record['timestamp'])
-        time_diff = (now - last_time).total_seconds()  # seconds
+        time_diff = (now - last_time).total_seconds() / 3600  # hours
         
-        # Only add if last record was more than 1 minute ago (60 seconds)
-        if time_diff < 60:
+        # Only add if last record was more than 1 hour ago
+        if time_diff < 1.0:
             should_add = False
     
     if should_add:
@@ -62,10 +62,9 @@ def add_health_record(patient_id: str, vitals: Dict) -> None:
         
         history[patient_id].append(record)
         
-        # Keep only last 7 days (7 days * 24 hours * 60 minutes = 10,080 records max)
-        max_records = 10080  # 7 days of minute-by-minute data
-        if len(history[patient_id]) > max_records:
-            history[patient_id] = history[patient_id][-max_records:]
+        # Keep only last 7 days (168 hours max)
+        if len(history[patient_id]) > 168:
+            history[patient_id] = history[patient_id][-168:]
         
         save_health_history(history)
 
@@ -101,7 +100,7 @@ def get_patient_history(patient_id: str, hours: int = 24) -> List[Dict]:
     return filtered_records
 
 def initialize_sample_data():
-    """Initialize sample health history data for testing (minute-by-minute for last 2 hours)"""
+    """Initialize sample health history data for testing (hourly for last 48 hours)"""
     from random import uniform, randint
     
     history = load_health_history()
@@ -112,10 +111,10 @@ def initialize_sample_data():
         if patient_id not in history or len(history[patient_id]) < 10:
             history[patient_id] = []
             
-            # Generate last 2 hours of data (every minute = 120 records)
+            # Generate last 48 hours of data (every hour = 48 records)
             now = datetime.now()
-            for i in range(120, 0, -1):
-                timestamp = (now - timedelta(minutes=i)).isoformat()
+            for i in range(48, 0, -1):
+                timestamp = (now - timedelta(hours=i)).isoformat()
                 
                 # Generate realistic vital signs with slight variations
                 base_temp = 98.0 + uniform(-0.5, 0.5)

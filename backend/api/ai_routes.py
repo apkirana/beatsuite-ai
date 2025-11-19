@@ -6,7 +6,7 @@ Gemini AI integration endpoints
 from flask import Blueprint, request, jsonify
 from backend.auth.decorators import login_required, role_required
 from backend.ai.gemini_service import gemini_service
-from backend.api.room_routes import load_room_data
+from backend.api.monitoring_routes import load_room_data
 import logging
 
 logger = logging.getLogger(__name__)

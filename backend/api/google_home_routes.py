@@ -5,7 +5,7 @@ Webhook for Google Actions fulfillment
 
 from flask import Blueprint, request, jsonify
 import logging
-from backend.api.room_routes import load_room_data, save_room_data
+from backend.api.monitoring_routes import load_room_data, save_room_data
 from backend.core.iot_controller import iot_manager
 from datetime import datetime
 

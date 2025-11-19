@@ -1,13 +1,13 @@
 """
-Room management API routes
+Room Monitoring API Routes
+Consolidated endpoints for room management and real-time monitoring
 """
-
 from flask import Blueprint, request, jsonify
 from backend.auth.decorators import login_required, role_required
 from backend.core.ai_engine import process_patient_update
 from backend.core.smartwatch import smartwatch_manager
 from backend.core.iot_controller import apply_ai_settings_to_room
-from backend.services import health_history_service
+from backend.services import health_history_service, room_service
 from datetime import datetime
 import json
 import os
@@ -15,8 +15,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-room_bp = Blueprint('rooms', __name__, url_prefix='/api/rooms')
-
+# ============== UTILITY FUNCTIONS ==============
 
 def load_room_data():
     """Load room monitoring data from file"""
@@ -41,11 +40,14 @@ def save_room_data(rooms):
         return False
 
 
+# ============== ROOM MONITORING BLUEPRINT ==============
+room_bp = Blueprint('rooms', __name__, url_prefix='/api/rooms')
+
 @room_bp.route('', methods=['GET'])
 @room_bp.route('/', methods=['GET'])
 @login_required
 def get_all_rooms():
-    """Get list of all rooms"""
+    """Get list of all rooms with live monitoring data"""
     try:
         rooms = load_room_data()
         
@@ -54,7 +56,6 @@ def get_all_rooms():
         
         if user_role == 'family':
             # Family members only see their assigned rooms
-            # In production, filter based on actual assignments
             rooms = {k: v for k, v in rooms.items() if k in ['room_101']}
         
         room_list = []
@@ -88,7 +89,7 @@ def get_all_rooms():
                 'room_id': room_id,
                 'room_number': room_id.replace('_', ' ').title(),
                 'patient_name': data.get('patient_name'),
-                'patient_id': patient_id,  # Add patient_id to response
+                'patient_id': patient_id,
                 'ai_control_active': data.get('ai_is_active', False),
                 'patient_status': data.get('patient_status'),
                 'vitals': vitals,
@@ -156,7 +157,7 @@ def get_room_data(room_id):
             except Exception as e:
                 logger.error(f"Error in AI loop: {e}")
         
-        # Format the response to match frontend expectations
+        # Format the response
         response = {
             'room_id': room_id,
             'room_number': room_id.replace('_', ' ').title(),
@@ -270,3 +271,116 @@ def resume_ai(room_id):
     except Exception as e:
         logger.error(f"Error resuming AI: {e}")
         return jsonify({'error': 'Failed to resume AI'}), 500
+
+
+# ============== ROOM MANAGEMENT (CRUD) BLUEPRINT ==============
+rooms_crud_bp = Blueprint('rooms_crud', __name__, url_prefix='/api/rooms-manage')
+
+@rooms_crud_bp.route('', methods=['GET'])
+@login_required
+def get_rooms():
+    """Get all rooms"""
+    try:
+        rooms = room_service.get_all_rooms()
+        return jsonify({'success': True, 'rooms': rooms}), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@rooms_crud_bp.route('/<room_id>', methods=['GET'])
+@login_required
+def get_room(room_id):
+    """Get room by ID"""
+    try:
+        room = room_service.get_room_by_id(room_id)
+        if room:
+            return jsonify({'success': True, 'room': room}), 200
+        return jsonify({'success': False, 'error': 'Room not found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@rooms_crud_bp.route('/available', methods=['GET'])
+@login_required
+def get_available_rooms():
+    """Get all available rooms"""
+    try:
+        rooms = room_service.get_available_rooms()
+        return jsonify({'success': True, 'rooms': rooms}), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@rooms_crud_bp.route('/occupied', methods=['GET'])
+@login_required
+def get_occupied_rooms():
+    """Get all occupied rooms"""
+    try:
+        rooms = room_service.get_occupied_rooms()
+        return jsonify({'success': True, 'rooms': rooms}), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@rooms_crud_bp.route('', methods=['POST'])
+@role_required(['admin'])
+def create_room():
+    """Create new room"""
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        required_fields = ['room_number', 'floor', 'ward', 'room_type', 'status']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({'success': False, 'error': f'Missing required field: {field}'}), 400
+        
+        room = room_service.create_room(data)
+        return jsonify({'success': True, 'room': room, 'message': 'Room created successfully'}), 201
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@rooms_crud_bp.route('/<room_id>', methods=['PUT'])
+@role_required(['admin', 'nurse'])
+def update_room(room_id):
+    """Update existing room"""
+    try:
+        data = request.get_json()
+        room = room_service.update_room(room_id, data)
+        
+        if room:
+            return jsonify({'success': True, 'room': room, 'message': 'Room updated successfully'}), 200
+        return jsonify({'success': False, 'error': 'Room not found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@rooms_crud_bp.route('/<room_id>/status', methods=['PATCH'])
+@role_required(['admin', 'nurse'])
+def update_room_status(room_id):
+    """Update room status"""
+    try:
+        data = request.get_json()
+        
+        if 'status' not in data:
+            return jsonify({'success': False, 'error': 'Missing status field'}), 400
+        
+        room = room_service.update_room_status(
+            room_id, 
+            data['status'], 
+            data.get('patient_id')
+        )
+        
+        if room:
+            return jsonify({'success': True, 'room': room, 'message': 'Room status updated'}), 200
+        return jsonify({'success': False, 'error': 'Room not found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@rooms_crud_bp.route('/<room_id>', methods=['DELETE'])
+@role_required(['admin'])
+def delete_room(room_id):
+    """Delete room (soft delete)"""
+    try:
+        success = room_service.delete_room(room_id)
+        
+        if success:
+            return jsonify({'success': True, 'message': 'Room deleted successfully'}), 200
+        return jsonify({'success': False, 'error': 'Room not found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500

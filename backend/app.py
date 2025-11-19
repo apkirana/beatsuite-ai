@@ -12,14 +12,15 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Import blueprints
+# Import consolidated blueprints
 from backend.api.auth_routes import auth_bp
-from backend.api.room_routes import room_bp
-from backend.api.ai_routes import ai_bp
-from backend.api.reports_routes import reports_bp, notifications_bp
-from backend.api.patient_routes import patients_bp
-from backend.api.room_crud_routes import rooms_crud_bp
 from backend.api.user_routes import users_bp
+from backend.api.healthcare_routes import patients_bp, health_history_bp, reports_bp, notifications_bp
+from backend.api.monitoring_routes import room_bp, rooms_crud_bp
+from backend.api.ai_routes import ai_bp
+from backend.api.assistant_routes import assistant_bp
+from backend.api.report_analysis_routes import report_analysis_bp
+from backend.api.google_home_routes import google_home_bp
 from backend.api.test_routes import test_bp
 
 # Import services
@@ -53,36 +54,29 @@ def create_app():
     # Enable CORS
     CORS(app, supports_credentials=True)
     
-    # Register blueprints
+    # Register consolidated blueprints
+    # Authentication & User Management
     app.register_blueprint(auth_bp)
-    app.register_blueprint(room_bp)
-    app.register_blueprint(ai_bp)
+    app.register_blueprint(users_bp)
+    
+    # Healthcare Management (patients, health history, reports)
+    app.register_blueprint(patients_bp)
+    app.register_blueprint(health_history_bp)
     app.register_blueprint(reports_bp)
     app.register_blueprint(notifications_bp)
     
-    # Register CRUD blueprints
-    app.register_blueprint(patients_bp)
+    # Room Monitoring (real-time monitoring, CRUD operations)
+    app.register_blueprint(room_bp)
     app.register_blueprint(rooms_crud_bp)
-    app.register_blueprint(users_bp)
     
-    # Register testing blueprints
-    app.register_blueprint(test_bp)
-    
-    # Register assistant blueprint
-    from .api.assistant_routes import assistant_bp
+    # AI Services (analysis, assistant, report generation)
+    app.register_blueprint(ai_bp)
     app.register_blueprint(assistant_bp)
-    
-    # Register Google Home integration
-    from .api.google_home_routes import google_home_bp
-    app.register_blueprint(google_home_bp)
-    
-    # Register Health History API
-    from .api.health_history_routes import health_history_bp
-    app.register_blueprint(health_history_bp)
-    
-    # Register AI Report Analysis API
-    from .api.report_analysis_routes import report_analysis_bp
     app.register_blueprint(report_analysis_bp)
+    
+    # Integrations & Testing
+    app.register_blueprint(google_home_bp)
+    app.register_blueprint(test_bp)
     
     # Initialize AI system
     smartwatch_manager.register_device("P001", "simulated")

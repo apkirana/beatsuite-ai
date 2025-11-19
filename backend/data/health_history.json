@@ -1021,6 +1021,20 @@
       "heart_rate": 66,
       "spo2": 100,
       "respiratory_rate": 16
+    },
+    {
+      "timestamp": "2025-11-19T20:41:19.316210",
+      "temperature": 98.6,
+      "heart_rate": 91,
+      "spo2": 98,
+      "respiratory_rate": 16
+    },
+    {
+      "timestamp": "2025-11-19T20:42:19.326376",
+      "temperature": 98.6,
+      "heart_rate": 60,
+      "spo2": 100,
+      "respiratory_rate": 16
     }
   ],
   "P002": [
@@ -2045,6 +2059,20 @@
       "heart_rate": 70,
       "spo2": 97,
       "respiratory_rate": 16
+    },
+    {
+      "timestamp": "2025-11-19T20:41:19.325764",
+      "temperature": 98.6,
+      "heart_rate": 60,
+      "spo2": 97,
+      "respiratory_rate": 16
+    },
+    {
+      "timestamp": "2025-11-19T20:42:19.338161",
+      "temperature": 98.6,
+      "heart_rate": 69,
+      "spo2": 96,
+      "respiratory_rate": 16
     }
   ],
   "P003": [
@@ -3068,6 +3096,13 @@
       "temperature": 98.6,
       "heart_rate": 65,
       "spo2": 98,
+      "respiratory_rate": 16
+    },
+    {
+      "timestamp": "2025-11-19T20:41:24.318907",
+      "temperature": 98.6,
+      "heart_rate": 70,
+      "spo2": 99,
       "respiratory_rate": 16
     }
   ],
