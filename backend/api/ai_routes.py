@@ -8,6 +8,7 @@ from backend.auth.decorators import login_required, role_required
 from backend.ai.gemini_service import gemini_service
 from backend.api.monitoring_routes import load_room_data
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -151,3 +152,39 @@ def ai_status():
         'provider': 'gemini-pro' if available else 'fallback',
         'message': 'Gemini AI is active' if available else 'Using fallback AI rules'
     })
+
+
+@ai_bp.route('/live/token', methods=['POST'])
+@login_required
+def get_live_token():
+    """
+    Get API token for Gemini Live WebSocket connection
+    Used by frontend to establish real-time voice chat
+    """
+    try:
+        data = request.get_json()
+        room_id = data.get('room_id')
+        
+        if not room_id:
+            return jsonify({'error': 'room_id required'}), 400
+        
+        # Get API key from environment
+        api_key = os.environ.get('GOOGLE_API_KEY')
+        
+        if not api_key:
+            return jsonify({
+                'error': 'API key not configured',
+                'message': 'GOOGLE_API_KEY environment variable is not set'
+            }), 503
+        
+        # Return the API key for WebSocket connection
+        # Note: In production, you might want to create session-specific tokens
+        return jsonify({
+            'success': True,
+            'token': api_key,
+            'room_id': room_id
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting live token: {e}")
+        return jsonify({'error': str(e)}), 500

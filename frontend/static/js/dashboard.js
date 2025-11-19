@@ -336,42 +336,60 @@ function createAssistantModal(room) {
                 </div>
                 <div id="chat-messages-${room.room_id}" class="assistant-chat-messages">
                     <div class="assistant-message system">
-                        <div style="text-align: center; padding: 20px;">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 12px; color: #0EA5E9;">
+                        <div style="text-align: center; padding: 30px 20px;">
+                            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                                    <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                                    <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                                </svg>
+                            </div>
+                            <div style="font-size: 22px; font-weight: 700; color: #1E293B; margin-bottom: 8px;">
+                                Gemini Live Assistant
+                            </div>
+                            <div style="font-size: 15px; color: #667eea; margin-bottom: 16px; font-weight: 600;">
+                                for ${room.patient_name}
+                            </div>
+                            <div style="font-size: 14px; color: #64748B; line-height: 1.8; max-width: 400px; margin: 0 auto;">
+                                Experience natural, real-time voice conversations with AI. Just click <strong>"Start Live Chat"</strong> below and speak naturally about vitals, sleep status, pain levels, or care needs.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gemini Live Voice Assistant -->
+                <div class="gemini-live-section" style="margin: 20px; padding: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);">
+                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+                        <div style="width: 56px; height: 56px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#667eea" stroke-width="2.5">
                                 <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
                                 <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
                                 <line x1="12" y1="19" x2="12" y2="23"></line>
                                 <line x1="8" y1="23" x2="16" y2="23"></line>
                             </svg>
-                            <div style="font-size: 18px; font-weight: 600; color: #1E293B; margin-bottom: 8px;">
-                                Voice Assistant for ${room.patient_name}
-                            </div>
-                            <div style="font-size: 14px; color: #64748B; margin-bottom: 16px;">
-                                Tap the microphone to start speaking
-                            </div>
-                            <div style="font-size: 12px; color: #94A3B8; line-height: 1.6;">
-                                Ask about vitals, sleep status, pain levels, or environment settings
-                            </div>
                         </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 700; color: white; font-size: 18px; margin-bottom: 4px; letter-spacing: -0.5px;">Gemini Live</div>
+                            <div style="font-size: 13px; color: rgba(255,255,255,0.9); font-weight: 500;">Real-time AI voice conversation</div>
+                        </div>
+                        <span id="gemini-live-status-${room.room_id}" style="color: white; font-size: 12px; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-weight: 600; backdrop-filter: blur(10px);">⚪ Inactive</span>
                     </div>
-                </div>
-                <div class="assistant-status" id="assistant-status-${room.room_id}">Ready - Tap mic to speak</div>
-                <div class="assistant-input-controls" style="justify-content: center; gap: 16px;">
-                    <button class="assistant-mic-btn-large" id="assistant-mic-${room.room_id}" onclick="event.stopPropagation(); window.toggleVoiceInput('${room.room_id}', event)" title="Start/Stop voice input">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <button id="gemini-live-toggle-${room.room_id}" class="gemini-live-btn" onclick="event.stopPropagation(); window.toggleGeminiLive('${room.room_id}')" style="width: 100%; padding: 16px; background: white; color: #667eea; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 16px rgba(0,0,0,0.15); font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
                             <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
                             <line x1="12" y1="19" x2="12" y2="23"></line>
                             <line x1="8" y1="23" x2="16" y2="23"></line>
                         </svg>
+                        <span>Start Voice Chat</span>
                     </button>
-                    <button class="assistant-speaker-btn" id="assistant-speaker-${room.room_id}" onclick="event.stopPropagation(); window.toggleSpeaker('${room.room_id}', event)" title="Mute/Unmute AI voice">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                        </svg>
-                    </button>
+                    <div style="margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.1); border-radius: 10px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 12px; color: rgba(255,255,255,0.95); line-height: 1.6;">
+                            💡 <strong>Tip:</strong> Speak naturally about patient vitals, comfort, sleep quality, or care needs. Gemini will respond with voice in real-time.
+                        </div>
+                    </div>
+                    <div id="gemini-live-transcript-${room.room_id}" class="gemini-live-transcript" style="display: none; margin-top: 16px; max-height: 250px; overflow-y: auto; background: rgba(0,0,0,0.25); border-radius: 10px; padding: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);"></div>
                 </div>
             </div>
         </div>
@@ -1011,6 +1029,148 @@ window.initAssistant = function(roomId, roomData) {
     } catch (error) {
         console.error('Error initializing assistant for room:', roomId, error);
     }
+};
+
+/**
+ * Toggle Gemini Live for a room
+ */
+window.toggleGeminiLive = function(roomId) {
+    console.log('🎯 toggleGeminiLive called for room:', roomId);
+    
+    // Check if GeminiLive class is available
+    if (typeof GeminiLive === 'undefined') {
+        console.error('❌ GeminiLive class not loaded!');
+        alert('Error: Gemini Live feature not loaded. Please refresh the page.');
+        return;
+    }
+    
+    // Initialize Gemini Live instances if not exists
+    if (!window.geminiLiveInstances) {
+        window.geminiLiveInstances = {};
+        console.log('✅ Initialized geminiLiveInstances');
+    }
+    
+    // Get or create Gemini Live instance
+    if (!window.geminiLiveInstances[roomId]) {
+        console.log('📝 Creating new Gemini Live instance for room:', roomId);
+        // Get room data from current rooms
+        const roomCard = document.querySelector(`[data-room-id="${roomId}"]`);
+        if (!roomCard) {
+            console.error('Room data not found for:', roomId);
+            return;
+        }
+        
+        // Get room data from window.currentRooms
+        const roomData = window.currentRooms?.find(r => r.room_id === roomId);
+        if (!roomData) {
+            console.error('Room data not found in currentRooms:', roomId);
+            return;
+        }
+        
+        // Create new Gemini Live instance
+        console.log('🔧 Creating GeminiLive instance with data:', roomData);
+        window.geminiLiveInstances[roomId] = new GeminiLive(roomId, roomData);
+        console.log('✅ GeminiLive instance created');
+        
+        // Override updateUI to use our specific elements
+        const instance = window.geminiLiveInstances[roomId];
+        const originalUpdateUI = instance.updateUI.bind(instance);
+        instance.updateUI = function(state, message = '') {
+            const statusEl = document.getElementById(`gemini-live-status-${roomId}`);
+            const buttonEl = document.getElementById(`gemini-live-toggle-${roomId}`);
+            const transcriptEl = document.getElementById(`gemini-live-transcript-${roomId}`);
+            
+            if (statusEl) {
+                let icon = '⚪';
+                let color = 'rgba(255,255,255,0.7)';
+                
+                switch (state) {
+                    case 'active':
+                        icon = '🟢';
+                        color = 'rgba(16, 185, 129, 1)';
+                        message = message || 'Connected';
+                        break;
+                    case 'listening':
+                        icon = '🎤';
+                        color = 'rgba(59, 130, 246, 1)';
+                        break;
+                    case 'speaking':
+                        icon = '🔊';
+                        color = 'rgba(139, 92, 246, 1)';
+                        break;
+                    case 'error':
+                        icon = '❌';
+                        color = 'rgba(239, 68, 68, 1)';
+                        break;
+                    default:
+                        icon = '⚪';
+                        message = 'Inactive';
+                }
+                
+                statusEl.innerHTML = `${icon} ${message}`;
+                statusEl.style.color = color;
+            }
+            
+            if (buttonEl) {
+                if (this.isActive) {
+                    buttonEl.innerHTML = `
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <rect x="6" y="4" width="4" height="16"></rect>
+                            <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                        <span>Stop Voice Chat</span>
+                    `;
+                    buttonEl.style.background = '#ef4444';
+                    buttonEl.style.color = 'white';
+                    buttonEl.classList.add('active');
+                } else {
+                    buttonEl.innerHTML = `
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                            <line x1="12" y1="19" x2="12" y2="23"></line>
+                            <line x1="8" y1="23" x2="16" y2="23"></line>
+                        </svg>
+                        <span>Start Voice Chat</span>
+                    `;
+                    buttonEl.style.background = 'white';
+                    buttonEl.style.color = '#667eea';
+                    buttonEl.classList.remove('active');
+                }
+            }
+            
+            // Show/hide transcript
+            if (transcriptEl && this.isActive) {
+                transcriptEl.style.display = 'block';
+            } else if (transcriptEl) {
+                transcriptEl.style.display = 'none';
+            }
+        };
+        
+        // Override displayTranscript to use our specific element
+        instance.displayTranscript = function(speaker, text) {
+            const transcriptEl = document.getElementById(`gemini-live-transcript-${roomId}`);
+            if (transcriptEl) {
+                const messageEl = document.createElement('div');
+                messageEl.style.cssText = `
+                    padding: 6px 8px;
+                    margin-bottom: 4px;
+                    border-radius: 6px;
+                    font-size: 12px;
+                    background: ${speaker === 'AI' ? 'rgba(139, 92, 246, 0.3)' : 'rgba(59, 130, 246, 0.3)'};
+                    color: white;
+                `;
+                messageEl.innerHTML = `<strong>${speaker}:</strong> ${text}`;
+                transcriptEl.appendChild(messageEl);
+                transcriptEl.scrollTop = transcriptEl.scrollHeight;
+            }
+        };
+    }
+    
+    // Toggle the instance
+    console.log('🔄 Calling toggle on instance:', window.geminiLiveInstances[roomId]);
+    window.geminiLiveInstances[roomId].toggle();
+    console.log('✅ Toggle completed');
 };
 
 // Export functions for inline onclick handlers

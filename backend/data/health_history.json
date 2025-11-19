@@ -1035,6 +1035,13 @@
       "heart_rate": 60,
       "spo2": 100,
       "respiratory_rate": 16
+    },
+    {
+      "timestamp": "2025-11-19T21:42:19.835511",
+      "temperature": 98.6,
+      "heart_rate": 80,
+      "spo2": 100,
+      "respiratory_rate": 16
     }
   ],
   "P002": [
@@ -2073,6 +2080,13 @@
       "heart_rate": 69,
       "spo2": 96,
       "respiratory_rate": 16
+    },
+    {
+      "timestamp": "2025-11-19T21:42:19.846034",
+      "temperature": 98.6,
+      "heart_rate": 60,
+      "spo2": 100,
+      "respiratory_rate": 16
     }
   ],
   "P003": [
@@ -3103,6 +3117,13 @@
       "temperature": 98.6,
       "heart_rate": 70,
       "spo2": 99,
+      "respiratory_rate": 16
+    },
+    {
+      "timestamp": "2025-11-19T21:41:39.810662",
+      "temperature": 98.6,
+      "heart_rate": 65,
+      "spo2": 96,
       "respiratory_rate": 16
     }
   ],
