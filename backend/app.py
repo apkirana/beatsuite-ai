@@ -72,6 +72,10 @@ def create_app():
     from .api.assistant_routes import assistant_bp
     app.register_blueprint(assistant_bp)
     
+    # Register Google Home integration
+    from .api.google_home_routes import google_home_bp
+    app.register_blueprint(google_home_bp)
+    
     # Initialize AI system
     smartwatch_manager.register_device("P001", "simulated")
     smartwatch_manager.register_device("P002", "simulated")

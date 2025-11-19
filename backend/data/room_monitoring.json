@@ -5,10 +5,10 @@
     "patient_id": "P001",
     "ai_is_active": true,
     "ai_mode": "automatic",
-    "last_updated": "2025-11-19T14:04:52.620114",
+    "last_updated": "2025-11-19T17:44:04.523342",
     "current_ai_settings": {
-      "light_hex_color": "#ffaa77",
-      "light_brightness": 0.4,
+      "light_hex_color": "#4A90E2",
+      "light_brightness": 0.7,
       "music_playlist_id": "calm_ambient",
       "music_volume": 0.2,
       "temperature": 72,
@@ -31,19 +31,19 @@
     "room_id": "room_102",
     "patient_name": "Maria Garcia",
     "patient_id": "P002",
-    "ai_is_active": true,
-    "ai_mode": "automatic",
-    "last_updated": "2025-11-19T14:00:00",
+    "ai_is_active": false,
+    "ai_mode": "manual",
+    "last_updated": "2025-11-19T17:44:04.555523",
     "current_ai_settings": {
       "light_hex_color": "#FFD699",
       "light_brightness": 0.6,
       "music_playlist_id": "upbeat_morning",
-      "music_volume": 0.3,
+      "music_volume": 0.4,
       "temperature": 71,
       "ai_reasoning": "Morning wake cycle. Energizing environment."
     },
     "manual_overrides": {
-      "is_active": false,
+      "is_active": true,
       "brightness": 50.0,
       "volume": 30.0
     },
