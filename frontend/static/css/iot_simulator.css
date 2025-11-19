@@ -24,14 +24,16 @@
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
-    background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+    background: linear-gradient(180deg, #E8F0FE 0%, #D4E4F7 50%, #C5D9F2 100%);
     background-attachment: fixed;
     color: var(--dark);
     line-height: 1.5;
     letter-spacing: -0.01em;
     font-size: 14px;
     min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
 }
 
 body::before {
@@ -42,25 +44,29 @@ body::before {
     right: 0;
     bottom: 0;
     background: 
-        radial-gradient(circle at 15% 20%, rgba(14, 165, 233, 0.03) 0%, transparent 40%),
-        radial-gradient(circle at 85% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 40%);
+        radial-gradient(ellipse at 20% 30%, rgba(14, 165, 233, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
     pointer-events: none;
     z-index: 0;
 }
 
-/* Header - Match Dashboard */
+/* Header - Apple Glass Style */
 .header {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.25);
     padding: 16px 32px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-    border-bottom: 1px solid var(--border);
+    box-shadow: 
+        0 4px 30px rgba(31, 38, 135, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.3);
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: sticky;
     top: 0;
     z-index: 100;
-    backdrop-filter: blur(12px) saturate(180%);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
 }
 
 .logo-container {
@@ -73,17 +79,23 @@ body::before {
     height: 70px;
     width: auto;
     object-fit: contain;
-    background: white;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     padding: 8px;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    border: 1px solid var(--border);
+    box-shadow: 
+        0 2px 8px rgba(31, 38, 135, 0.08),
+        inset 0 0.5px 0.5px rgba(255, 255, 255, 0.5);
+    border: 0.5px solid rgba(255, 255, 255, 0.3);
     transition: all 0.3s ease;
 }
 
 .logo-img:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    box-shadow: 
+        0 4px 12px rgba(31, 38, 135, 0.12),
+        inset 0 0.5px 1px rgba(255, 255, 255, 0.6);
 }
 
 .brand-info h1 {
@@ -155,18 +167,46 @@ body::before {
 }
 
 .room-simulator {
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(60px) saturate(200%);
+    -webkit-backdrop-filter: blur(60px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-top: 1.5px solid rgba(255, 255, 255, 0.7);
+    border-radius: 24px;
     padding: 24px;
-    box-shadow: var(--shadow-sm);
-    transition: all 0.2s ease;
+    box-shadow: 
+        0 10px 40px rgba(31, 38, 135, 0.12),
+        inset 0 1px 2px rgba(255, 255, 255, 0.6),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+}
+
+.room-simulator::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.9) 20%,
+        rgba(255, 255, 255, 0.9) 80%,
+        transparent
+    );
+    opacity: 0.6;
 }
 
 .room-simulator:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--primary);
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 
+        0 16px 60px rgba(31, 38, 135, 0.18),
+        0 0 0 1px rgba(14, 165, 233, 0.2),
+        inset 0 1px 2px rgba(255, 255, 255, 0.7),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.05);
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.4);
 }
 
 .room-header {
@@ -267,7 +307,9 @@ body::before {
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    background: white;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 }
 
 .lamp-bulb svg {
@@ -436,22 +478,28 @@ body::before {
 .control-btn {
     width: 42px;
     height: 42px;
-    border-radius: 8px;
-    background: white;
-    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 0.5px solid rgba(255, 255, 255, 0.4);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
-    box-shadow: var(--shadow-sm);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 
+        0 2px 8px rgba(31, 38, 135, 0.08),
+        inset 0 0.5px 0.5px rgba(255, 255, 255, 0.5);
 }
 
 .control-btn:hover {
     background: var(--primary);
     border-color: var(--primary);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 
+        0 6px 20px rgba(14, 165, 233, 0.3),
+        inset 0 0.5px 1px rgba(255, 255, 255, 0.6);
 }
 
 .control-btn:hover svg {

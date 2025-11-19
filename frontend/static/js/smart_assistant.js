@@ -93,21 +93,35 @@ class SmartAssistant {
             } catch (e) {
                 console.log('⚠️ Recognition already stopped');
             }
-            this.updateAssistantStatus('Ready');
+            this.updateAssistantStatus('Ready - Tap mic to speak');
             this.updateMicButton();
         } else {
             // Start listening
             console.log('▶️ Starting voice input (continuous mode)');
             this.isListening = true;
+            
             try {
+                this.updateAssistantStatus('🎤 Starting microphone... (allow permission if asked)');
                 this.recognition.start();
-                this.updateAssistantStatus('🎤 Listening... (speak your questions)');
+                
+                // Update status after recognition actually starts
+                setTimeout(() => {
+                    if (this.isListening) {
+                        this.updateAssistantStatus('🎤 Listening... (speak your questions)');
+                    }
+                }, 500);
+                
                 this.updateMicButton();
             } catch (e) {
                 console.error('❌ Failed to start recognition:', e);
                 this.isListening = false;
                 this.updateMicButton();
-                alert('Failed to start voice recognition. Please try again.');
+                this.updateAssistantStatus('❌ Microphone access denied or unavailable');
+                
+                // Show helpful message
+                setTimeout(() => {
+                    this.updateAssistantStatus('Ready - Tap mic to try again');
+                }, 3000);
             }
         }
     }
@@ -236,12 +250,12 @@ class SmartAssistant {
             if (room.current_state.pain_detected) status = 'experiencing some discomfort';
             else if (hr > 100 || spo2 < 95) status = 'needs attention';
             
-            return `${room.patient_name} is currently ${status}. Heart rate is ${hr} BPM, temperature is ${temp}°F, and oxygen saturation is ${spo2}%. The patient is in ${room.current_state.sleep_stage} stage.`;
+            return `${room.patient_name} is currently ${status}. Heart rate is ${hr} BPM, temperature is ${((temp - 32) * 5/9).toFixed(1)}°C, and oxygen saturation is ${spo2}%. The patient is in ${room.current_state.sleep_stage} stage.`;
         }
         
         // Vitals
         if (queryLower.includes('vital') || queryLower.includes('heart') || queryLower.includes('temperature')) {
-            return `Current vitals for ${room.patient_name}: Heart rate ${room.vitals.heart_rate} BPM, Temperature ${room.vitals.temperature}°F, Respiratory rate ${room.vitals.respiratory_rate}/min, SpO2 ${room.vitals.spo2}%.`;
+            return `Current vitals for ${room.patient_name}: Heart rate ${room.vitals.heart_rate} BPM, Temperature ${((room.vitals.temperature - 32) * 5/9).toFixed(1)}°C, Respiratory rate ${room.vitals.respiratory_rate}/min, SpO2 ${room.vitals.spo2}%.`;
         }
         
         // Sleep
@@ -278,7 +292,7 @@ class SmartAssistant {
     }
     
     /**
-     * Text-to-speech with natural, charming voice
+     * Text-to-speech with natural, human-like voice (Samantha Enhanced)
      */
     speak(text) {
         if (!this.synthesis || this.isMuted) return;
@@ -288,62 +302,70 @@ class SmartAssistant {
         
         const utterance = new SpeechSynthesisUtterance(text);
         
-        // Charming, conversational voice settings - less robotic, more human
-        utterance.rate = 1.0;       // Natural conversational speed
-        utterance.pitch = 1.4;      // Warmer, friendlier pitch
-        utterance.volume = 0.95;    // Confident and clear
+        // Optimized settings for Samantha (Enhanced) - most human-like voice
+        utterance.rate = 0.95;      // Slightly slower for natural clarity
+        utterance.pitch = 1.50;     // Natural, warm, conversational pitch
+        utterance.volume = 1.0;     // Full, confident volume
         
         // Select the most natural, human-like voice available
         const voices = this.synthesis.getVoices();
         
-        // Priority list: Enhanced/Premium voices sound most human
+        // Prioritize Samantha (Enhanced) - the most natural macOS voice
         const preferredVoices = [
-            // macOS Premium voices (most natural)
-            'Samantha (Enhanced)',
-            'Samantha',
-            'Ava (Premium)',
+            'Samantha (Enhanced)',  // Best - Premium macOS voice, extremely natural
+            'Samantha',             // Good fallback
+            'Ava (Premium)',        // Alternative premium option
             'Ava',
-            'Nicky',
+            'Allison (Premium)',
             'Allison',
+            'Susan (Premium)',
             'Susan',
-            // Google voices (natural sounding)
+            'Nicky',
+            // Google voices (good quality)
             'Google US English',
             'Google UK English Female',
-            // Microsoft voices (good quality)
-            'Microsoft Zira',
+            // Microsoft voices
             'Microsoft Aria',
+            'Microsoft Zira',
             // Other quality voices
             'Karen',
             'Moira',
             'Tessa',
-            'Veena',
             'Fiona'
         ];
         
         // Try to find preferred voice
         let selectedVoice = null;
         for (const voiceName of preferredVoices) {
-            selectedVoice = voices.find(v => v.name.includes(voiceName));
+            selectedVoice = voices.find(v => v.name === voiceName || v.name.includes(voiceName));
             if (selectedVoice) {
                 console.log('🎙️ Selected voice:', selectedVoice.name);
                 break;
             }
         }
         
-        // Fallback: Find any natural-sounding female voice
+        // Fallback: Find any Enhanced/Premium voice first
         if (!selectedVoice) {
             selectedVoice = voices.find(v => 
-                (v.lang.startsWith('en') && 
-                (v.name.toLowerCase().includes('female') || 
-                 v.name.toLowerCase().includes('woman') ||
-                 !v.name.toLowerCase().includes('male'))) ||
-                v.name.includes('Enhanced') ||
+                v.name.includes('Enhanced') || 
                 v.name.includes('Premium')
+            );
+        }
+        
+        // Last resort: Find any natural-sounding English female voice
+        if (!selectedVoice) {
+            selectedVoice = voices.find(v => 
+                v.lang.startsWith('en') && 
+                (v.name.toLowerCase().includes('female') || 
+                 !v.name.toLowerCase().includes('male'))
             );
         }
         
         if (selectedVoice) {
             utterance.voice = selectedVoice;
+            console.log('🎙️ Using voice:', selectedVoice.name, '| Language:', selectedVoice.lang);
+        } else {
+            console.warn('⚠️ No preferred voice found, using default');
         }
         
         utterance.onstart = () => {
@@ -401,6 +423,18 @@ class SmartAssistant {
         const statusElement = document.getElementById(`assistant-status-${this.roomId}`);
         if (statusElement) {
             statusElement.textContent = status;
+            
+            // Add appropriate class for styling
+            statusElement.className = 'assistant-status';
+            if (status.includes('🎤') || status.includes('Listening')) {
+                statusElement.classList.add('listening');
+            } else if (status.includes('🤔') || status.includes('Thinking')) {
+                statusElement.classList.add('thinking');
+            } else if (status.includes('🗣️') || status.includes('Speaking')) {
+                statusElement.classList.add('speaking');
+            }
+            
+            console.log('📊 Status updated to:', status);
         }
     }
     

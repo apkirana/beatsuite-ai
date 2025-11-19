@@ -14,9 +14,9 @@ echo "=============================================="
 echo ""
 
 # Configuration (customize these)
-PROJECT_ID="${GCP_PROJECT_ID:-beatsuite-ai-prod}"
+PROJECT_ID="${GCP_PROJECT_ID:-beatsuite-478714}"
 REGION="${GCP_REGION:-us-central1}"
-SERVICE_NAME="${SERVICE_NAME:-beatsuite-ai}"
+SERVICE_NAME="${SERVICE_NAME:-beatsuite}"
 
 echo "📋 Configuration:"
 echo "   Project ID: $PROJECT_ID"

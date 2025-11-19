@@ -313,6 +313,15 @@ function displayRooms(rooms) {
                     <span class="field-label">Patient</span>
                     <span class="field-value">${room.patient_id || 'None'}</span>
                 </div>
+                <div class="card-field">
+                    <span class="field-label">AI Control</span>
+                    <button 
+                        class="btn-edit" 
+                        onclick="toggleRoomAI('${room.room_id}', ${room.ai_is_active || false})"
+                        style="padding: 6px 14px; font-size: 11px; ${room.ai_is_active ? 'background: rgba(239, 68, 68, 0.1); color: var(--danger); border-color: rgba(239, 68, 68, 0.3);' : 'background: rgba(16, 185, 129, 0.1); color: #10B981; border-color: rgba(16, 185, 129, 0.3);'}">
+                        ${room.ai_is_active ? '⏸️ Pause AI' : '▶️ Activate AI'}
+                    </button>
+                </div>
             </div>
         </div>
     `).join('');
@@ -423,6 +432,46 @@ async function deleteRoom(roomId) {
     } catch (error) {
         console.error('Error:', error);
         alert('Failed to delete room');
+    }
+}
+
+async function toggleRoomAI(roomId, isActive) {
+    try {
+        console.log(`[ADMIN] Toggle AI for ${roomId}: Currently ${isActive ? 'active' : 'inactive'}`);
+        
+        let response;
+        
+        if (isActive) {
+            // Pause AI - set manual override
+            response = await fetch(`/api/rooms/${roomId}/override`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                credentials: 'include',
+                body: JSON.stringify({
+                    brightness: 50,
+                    volume: 30
+                })
+            });
+        } else {
+            // Resume AI control
+            response = await fetch(`/api/rooms/${roomId}/resume`, {
+                method: 'POST',
+                credentials: 'include'
+            });
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert(data.message);
+            loadRooms();  // Reload to update UI
+        } else {
+            alert('Failed: ' + (data.error || 'Unknown error'));
+        }
+        
+    } catch (error) {
+        console.error('Error toggling AI:', error);
+        alert('Failed to toggle AI control');
     }
 }
 

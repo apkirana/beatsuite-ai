@@ -174,7 +174,7 @@ function displayRooms() {
                                 <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
                             </svg>
                         </span>
-                        <span class="vital-value">${room.vitals.temperature}°F</span>
+                        <span class="vital-value">${((room.vitals.temperature - 32) * 5/9).toFixed(1)}°C</span>
                     </div>
                     <div class="vital-item">
                         <span class="vital-icon">
@@ -277,6 +277,27 @@ function displayRooms() {
                         Staff controlling environment
                     </div>`}
                 </div>
+                
+                <div class="room-footer" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; gap: 8px;">
+                    <button class="view-history-btn" onclick="event.stopPropagation(); showHealthHistory('${room.patient_id}', '${room.patient_name}')" title="View Health History">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="20" x2="12" y2="10"/>
+                            <line x1="18" y1="20" x2="18" y2="4"/>
+                            <line x1="6" y1="20" x2="6" y2="16"/>
+                        </svg>
+                        <span>View History</span>
+                    </button>
+                    <button class="generate-report-btn" onclick="event.stopPropagation(); generatePatientReport('${room.room_id}')" title="Generate PDF Report">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                        <span>Report</span>
+                    </button>
+                </div>
             </div>
         </div>
         `;
@@ -315,30 +336,37 @@ function createAssistantModal(room) {
                 </div>
                 <div id="chat-messages-${room.room_id}" class="assistant-chat-messages">
                     <div class="assistant-message system">
-                        Hi! I'm your AI assistant for ${room.patient_name} in ${room.room_number}. 
-                        You can ask me about the patient's vitals, sleep status, pain levels, or environment settings. 
-                        Try asking "How is the patient?" or click the 🎤 to speak!
+                        <div style="text-align: center; padding: 20px;">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 12px; color: #0EA5E9;">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                <line x1="12" y1="19" x2="12" y2="23"></line>
+                                <line x1="8" y1="23" x2="16" y2="23"></line>
+                            </svg>
+                            <div style="font-size: 18px; font-weight: 600; color: #1E293B; margin-bottom: 8px;">
+                                Voice Assistant for ${room.patient_name}
+                            </div>
+                            <div style="font-size: 14px; color: #64748B; margin-bottom: 16px;">
+                                Tap the microphone to start speaking
+                            </div>
+                            <div style="font-size: 12px; color: #94A3B8; line-height: 1.6;">
+                                Ask about vitals, sleep status, pain levels, or environment settings
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="assistant-status" id="assistant-status-${room.room_id}">Ready</div>
-                <div class="assistant-input-controls">
-                    <input type="text" id="assistant-input-${room.room_id}" class="assistant-text-input" placeholder="Type your question or click mic to speak..." onclick="event.stopPropagation();" onfocus="event.stopPropagation();" onkeypress="if(event.key==='Enter') { event.preventDefault(); event.stopPropagation(); window.handleAssistantQuery('${room.room_id}', event); }">
-                    <button class="assistant-send-btn" onclick="event.stopPropagation(); window.handleAssistantQuery('${room.room_id}', event)" title="Send message">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="22" y1="2" x2="11" y2="13"></line>
-                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                        </svg>
-                    </button>
-                    <button class="assistant-mic-btn" id="assistant-mic-${room.room_id}" onclick="event.stopPropagation(); window.toggleVoiceInput('${room.room_id}', event)" title="Voice input">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <div class="assistant-status" id="assistant-status-${room.room_id}">Ready - Tap mic to speak</div>
+                <div class="assistant-input-controls" style="justify-content: center; gap: 16px;">
+                    <button class="assistant-mic-btn-large" id="assistant-mic-${room.room_id}" onclick="event.stopPropagation(); window.toggleVoiceInput('${room.room_id}', event)" title="Start/Stop voice input">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
                             <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
                             <line x1="12" y1="19" x2="12" y2="23"></line>
                             <line x1="8" y1="23" x2="16" y2="23"></line>
                         </svg>
                     </button>
-                    <button class="assistant-speaker-btn" id="assistant-speaker-${room.room_id}" onclick="event.stopPropagation(); window.toggleSpeaker('${room.room_id}', event)" title="Mute/Unmute">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <button class="assistant-speaker-btn" id="assistant-speaker-${room.room_id}" onclick="event.stopPropagation(); window.toggleSpeaker('${room.room_id}', event)" title="Mute/Unmute AI voice">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                             <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
                             <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
@@ -360,7 +388,25 @@ function createAssistantModal(room) {
     if (modalOverlay) {
         // Close only when clicking the dark overlay background
         modalOverlay.addEventListener('click', function(event) {
+            // Don't close if mic permission is being requested
+            if (modalOverlay.dataset.micRequesting === 'true') {
+                console.log('🔒 Modal LOCKED - microphone permission in progress');
+                event.stopPropagation();
+                event.preventDefault();
+                return;
+            }
+            
+            // Don't close if assistant is actively listening
+            const assistant = window.assistants && window.assistants[room.room_id];
+            if (assistant && assistant.isListening) {
+                console.log('🎤 Assistant is listening - modal stays open (click ignored)');
+                event.stopPropagation();
+                event.preventDefault();
+                return;
+            }
+            
             if (event.target === modalOverlay) {
+                console.log('📍 Overlay clicked - toggling modal');
                 toggleAssistant(room.room_id);
             }
         });
@@ -370,6 +416,14 @@ function createAssistantModal(room) {
     if (modalContent) {
         modalContent.addEventListener('click', function(event) {
             event.stopPropagation();
+        });
+        
+        // Also prevent on buttons specifically
+        const allButtons = modalContent.querySelectorAll('button');
+        allButtons.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
         });
     }
     
@@ -511,7 +565,7 @@ async function showRoomDetails(roomId) {
                     <h3 style="margin-bottom: 15px;">Vital Signs</h3>
                     <div style="display: grid; gap: 10px;">
                         <div><strong>Heart Rate:</strong> ${room.vitals.heart_rate} bpm</div>
-                        <div><strong>Temperature:</strong> ${room.vitals.temperature}°F</div>
+                        <div><strong>Temperature:</strong> ${((room.vitals.temperature - 32) * 5/9).toFixed(1)}°C</div>
                         <div><strong>Respiratory Rate:</strong> ${room.vitals.respiratory_rate}/min</div>
                         <div><strong>SpO2:</strong> ${room.vitals.spo2}%</div>
                         <div><strong>Blood Pressure:</strong> ${room.vitals.blood_pressure}</div>
@@ -795,36 +849,60 @@ window.addEventListener('beforeunload', () => {
 /**
  * Toggle AI Assistant modal
  */
-window.toggleAssistant = function(roomId) {
+window.toggleAssistant = function(roomId, forceOpen = false) {
+    const modal = document.getElementById(`assistant-modal-${roomId}`);
+    
+    if (!modal) {
+        console.error('❌ Modal not found for room:', roomId);
+        return;
+    }
+    
+    // Don't close if microphone permission is being requested
+    if (modal.dataset.micRequesting === 'true') {
+        console.log('🔒 Modal LOCKED - microphone permission in progress, cannot close');
+        return;
+    }
+    
+    // Check if assistant is listening - don't close if actively listening
+    const assistant = window.assistants && window.assistants[roomId];
+    if (assistant && assistant.isListening && !forceOpen) {
+        console.log('🎤 Assistant is listening - modal stays open');
+        return;
+    }
+    
+    console.log('🔄 Toggle assistant for room:', roomId, 'Current display:', modal.style.display, 'Force open:', forceOpen);
+    
     // Close any open modals first
     const allModals = document.querySelectorAll('.assistant-modal-overlay');
-    allModals.forEach(modal => {
-        if (modal.id !== `assistant-modal-${roomId}`) {
-            modal.style.display = 'none';
+    allModals.forEach(m => {
+        if (m.id !== `assistant-modal-${roomId}`) {
+            m.style.display = 'none';
             // Stop any ongoing speech
-            const modalRoomId = modal.id.replace('assistant-modal-', '');
+            const modalRoomId = m.id.replace('assistant-modal-', '');
             if (window.assistants && window.assistants[modalRoomId]) {
                 window.assistants[modalRoomId].stopSpeaking();
             }
         }
     });
     
-    const modal = document.getElementById(`assistant-modal-${roomId}`);
-    if (modal) {
-        if (modal.style.display === 'none' || modal.style.display === '') {
-            modal.style.display = 'flex';
-            // Scroll to bottom of chat
-            const chatMessages = document.getElementById(`chat-messages-${roomId}`);
-            if (chatMessages) {
-                setTimeout(() => {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 100);
-            }
-        } else {
-            modal.style.display = 'none';
-            // Stop any ongoing speech
-            if (window.assistants && window.assistants[roomId]) {
-                window.assistants[roomId].stopSpeaking();
+    if (modal.style.display === 'none' || modal.style.display === '' || forceOpen) {
+        console.log('✅ Opening modal for room:', roomId);
+        modal.style.display = 'flex';
+        // Scroll to bottom of chat
+        const chatMessages = document.getElementById(`chat-messages-${roomId}`);
+        if (chatMessages) {
+            setTimeout(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 100);
+        }
+    } else {
+        console.log('❌ Closing modal for room:', roomId);
+        modal.style.display = 'none';
+        // Stop any ongoing speech and listening
+        if (assistant) {
+            assistant.stopSpeaking();
+            if (assistant.isListening) {
+                assistant.toggleVoiceInput();
             }
         }
     }
@@ -857,8 +935,35 @@ window.toggleVoiceInput = function(roomId, event) {
         event.stopPropagation();
         event.preventDefault();
     }
-    if (window.assistants && window.assistants[roomId]) {
-        window.assistants[roomId].toggleVoiceInput();
+    
+    console.log('🎤 Toggle voice input for room:', roomId);
+    
+    // Lock the modal immediately before starting voice input
+    const modal = document.getElementById(`assistant-modal-${roomId}`);
+    const assistant = window.assistants && window.assistants[roomId];
+    
+    if (modal && modal.style.display !== 'none') {
+        // If starting to listen, lock the modal
+        if (assistant && !assistant.isListening) {
+            modal.dataset.micRequesting = 'true';
+            console.log('🔒 Modal LOCKED - starting microphone');
+            
+            // Auto-unlock after 10 seconds as safety measure (increased from 5)
+            setTimeout(() => {
+                if (modal.dataset.micRequesting === 'true') {
+                    delete modal.dataset.micRequesting;
+                    console.log('🔓 Modal auto-unlocked after timeout');
+                }
+            }, 10000);
+        } else if (assistant && assistant.isListening) {
+            // If stopping, unlock the modal
+            delete modal.dataset.micRequesting;
+            console.log('🔓 Modal unlocked - stopping microphone');
+        }
+    }
+    
+    if (assistant) {
+        assistant.toggleVoiceInput();
     }
 };
 

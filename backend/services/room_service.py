@@ -8,12 +8,20 @@ from datetime import datetime
 from typing import List, Dict, Optional
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), '../data/rooms.json')
+MONITORING_FILE = os.path.join(os.path.dirname(__file__), '../data/room_monitoring.json')
 
 def load_rooms() -> List[Dict]:
     """Load all rooms from JSON file"""
     if not os.path.exists(DATA_FILE):
         return []
     with open(DATA_FILE, 'r') as f:
+        return json.load(f)
+
+def load_monitoring_data() -> Dict:
+    """Load room monitoring data including AI status"""
+    if not os.path.exists(MONITORING_FILE):
+        return {}
+    with open(MONITORING_FILE, 'r') as f:
         return json.load(f)
 
 def save_rooms(rooms: List[Dict]) -> None:
@@ -23,8 +31,18 @@ def save_rooms(rooms: List[Dict]) -> None:
         json.dump(rooms, f, indent=2)
 
 def get_all_rooms() -> List[Dict]:
-    """Get all active rooms"""
+    """Get all active rooms with AI status from monitoring data"""
     rooms = load_rooms()
+    monitoring = load_monitoring_data()
+    
+    # Merge AI status from monitoring data
+    for room in rooms:
+        if room.get('is_active', True):
+            room_id = room['room_id']
+            if room_id in monitoring:
+                room['ai_is_active'] = monitoring[room_id].get('ai_is_active', False)
+                room['ai_mode'] = monitoring[room_id].get('ai_mode', 'manual')
+    
     return [r for r in rooms if r.get('is_active', True)]
 
 def get_room_by_id(room_id: str) -> Optional[Dict]:

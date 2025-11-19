@@ -7,7 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}?v=20">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}?v=2025k">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -120,9 +122,46 @@
         </div>
     </div>
 
+    <!-- Health History Modal -->
+    <div id="healthHistoryModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 1200px; width: 95%;">
+            <div class="modal-header">
+                <h2 id="healthHistoryTitle">Health History</h2>
+                <button class="close-button" onclick="closeHealthHistory()">×</button>
+            </div>
+            <div class="modal-body" style="padding: 30px;">
+                <div style="margin-bottom: 20px;">
+                    <label for="timeRangeSelect" style="font-weight: 600; margin-right: 10px;">Time Range:</label>
+                    <select id="timeRangeSelect" onchange="updateHealthHistory()" style="padding: 8px 16px; border-radius: 8px; border: 1.5px solid var(--border); font-family: Inter;">
+                        <option value="24">Last 24 Hours</option>
+                        <option value="48">Last 48 Hours</option>
+                        <option value="72">Last 3 Days</option>
+                        <option value="168">Last 7 Days</option>
+                    </select>
+                </div>
+                <div class="health-charts">
+                    <div class="chart-container">
+                        <h3 style="text-align: center; color: var(--primary); margin-bottom: 15px;">🌡️ Temperature (°C)</h3>
+                        <canvas id="temperatureChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3 style="text-align: center; color: var(--primary); margin-bottom: 15px;">❤️ Heart Rate (BPM)</h3>
+                        <canvas id="heartRateChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3 style="text-align: center; color: var(--primary); margin-bottom: 15px;">🫁 Oxygen Level (%)</h3>
+                        <canvas id="oxygenChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/auth.js') }}?v=10"></script>
     <script src="{{ url_for('static', filename='js/api.js') }}?v=10"></script>
-    <script src="{{ url_for('static', filename='js/smart_assistant.js') }}?v=24"></script>
-    <script src="{{ url_for('static', filename='js/dashboard.js') }}?v=22"></script>
+    <script src="{{ url_for('static', filename='js/smart_assistant.js') }}?v=samantha2025"></script>
+    <script src="{{ url_for('static', filename='js/report_generator.js') }}?v=fixed2025"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}?v=2025k"></script>
+    <script src="{{ url_for('static', filename='js/health_history.js') }}?v=1"></script>
 </body>
 </html>

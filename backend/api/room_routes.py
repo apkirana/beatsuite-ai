@@ -7,6 +7,7 @@ from backend.auth.decorators import login_required, role_required
 from backend.core.ai_engine import process_patient_update
 from backend.core.smartwatch import smartwatch_manager
 from backend.core.iot_controller import apply_ai_settings_to_room
+from backend.services import health_history_service
 from datetime import datetime
 import json
 import os
@@ -77,6 +78,9 @@ def get_all_rooms():
                         vitals['temperature'] = round(sw_data.get('temperature', vitals['temperature']), 1)
                         vitals['respiratory_rate'] = int(sw_data.get('respiratory_rate', vitals['respiratory_rate']))
                         vitals['spo2'] = int(sw_data.get('spo2', vitals['spo2']))
+                        
+                        # Save vitals to history (auto-saves hourly)
+                        health_history_service.add_health_record(patient_id, vitals)
                 except Exception as e:
                     logger.warning(f"Failed to get smartwatch data for {patient_id}: {e}")
             
@@ -84,6 +88,7 @@ def get_all_rooms():
                 'room_id': room_id,
                 'room_number': room_id.replace('_', ' ').title(),
                 'patient_name': data.get('patient_name'),
+                'patient_id': patient_id,  # Add patient_id to response
                 'ai_control_active': data.get('ai_is_active', False),
                 'patient_status': data.get('patient_status'),
                 'vitals': vitals,

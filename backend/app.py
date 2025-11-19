@@ -76,6 +76,14 @@ def create_app():
     from .api.google_home_routes import google_home_bp
     app.register_blueprint(google_home_bp)
     
+    # Register Health History API
+    from .api.health_history_routes import health_history_bp
+    app.register_blueprint(health_history_bp)
+    
+    # Register AI Report Analysis API
+    from .api.report_analysis_routes import report_analysis_bp
+    app.register_blueprint(report_analysis_bp)
+    
     # Initialize AI system
     smartwatch_manager.register_device("P001", "simulated")
     smartwatch_manager.register_device("P002", "simulated")
