@@ -5,7 +5,7 @@
     "patient_id": "P001",
     "ai_is_active": true,
     "ai_mode": "automatic",
-    "last_updated": "2025-11-19T17:44:04.523342",
+    "last_updated": "2025-11-19T17:56:55.661022",
     "current_ai_settings": {
       "light_hex_color": "#4A90E2",
       "light_brightness": 0.7,
@@ -16,10 +16,10 @@
     },
     "manual_overrides": {
       "is_active": false,
-      "brightness": 50.0,
-      "volume": 30.0,
+      "brightness": 80.0,
+      "volume": 40.0,
       "overridden_by": "admin",
-      "overridden_at": "2025-11-19T14:04:48.027882"
+      "overridden_at": "2025-11-19T17:56:55.655028"
     },
     "patient_status": "stable",
     "heart_rate": 65,
