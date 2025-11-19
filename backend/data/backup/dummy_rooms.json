@@ -1,0 +1,86 @@
+{
+  "room_101": {
+    "room_id": "room_101",
+    "patient_name": "Alex Thompson",
+    "patient_id": "P001",
+    "ai_is_active": true,
+    "ai_mode": "automatic",
+    "last_updated": "2025-11-19T12:00:00",
+    "current_ai_settings": {
+      "light_hex_color": "#ffaa77",
+      "light_brightness": 0.4,
+      "music_playlist_id": "calm_ambient",
+      "music_volume": 0.2,
+      "temperature": 72,
+      "ai_reasoning": "Patient data shows light sleep. Promoting calm."
+    },
+    "manual_overrides": {
+      "is_active": false,
+      "brightness": 0.5,
+      "volume": 0.2,
+      "temperature": 72
+    },
+    "patient_status": "stable",
+    "heart_rate": 65,
+    "oxygen_level": 98,
+    "sleep_stage": "light_sleep",
+    "pain_detected": false
+  },
+  "room_102": {
+    "room_id": "room_102",
+    "patient_name": "Maria Garcia",
+    "patient_id": "P002",
+    "ai_is_active": true,
+    "ai_mode": "automatic",
+    "last_updated": "2025-11-19T13:35:51.715472",
+    "current_ai_settings": {
+      "light_hex_color": "#FFD699",
+      "light_brightness": 0.6,
+      "music_playlist_id": "upbeat_morning",
+      "music_volume": 0.3,
+      "temperature": 71,
+      "ai_reasoning": "Morning wake cycle. Energizing environment."
+    },
+    "manual_overrides": {
+      "is_active": false,
+      "brightness": 50.0,
+      "volume": 30.0,
+      "overridden_by": "admin",
+      "overridden_at": "2025-11-19T13:35:48.021999"
+    },
+    "patient_status": "stable",
+    "heart_rate": 72,
+    "oxygen_level": 99,
+    "sleep_stage": "awake",
+    "pain_detected": false
+  },
+  "room_103": {
+    "room_id": "room_103",
+    "patient_name": "James Wilson",
+    "patient_id": "P003",
+    "ai_is_active": true,
+    "ai_mode": "automatic",
+    "last_updated": "2025-11-19T13:35:42.166188",
+    "current_ai_settings": {
+      "light_hex_color": "#FF6B4A",
+      "light_brightness": 0.2,
+      "music_playlist_id": "healing_frequencies",
+      "music_volume": 0.25,
+      "temperature": 72,
+      "ai_reasoning": "Manual override active"
+    },
+    "manual_overrides": {
+      "is_active": false,
+      "brightness": 0.3,
+      "volume": 0.15,
+      "temperature": 72,
+      "overridden_by": "nurse1",
+      "overridden_at": "2025-11-19T11:45:00"
+    },
+    "patient_status": "monitoring",
+    "heart_rate": 85,
+    "oxygen_level": 96,
+    "sleep_stage": "awake",
+    "pain_detected": true
+  }
+}

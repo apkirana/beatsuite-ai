@@ -1,0 +1,46 @@
+[
+  {
+    "user_id": "U001",
+    "username": "admin",
+    "password_hash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+    "role": "admin",
+    "full_name": "Dr. Sarah Johnson",
+    "email": "admin@maximacentrum.nl",
+    "phone": "+31-88-972-7272",
+    "created_at": "2025-01-01T00:00:00",
+    "is_active": true
+  },
+  {
+    "user_id": "U002",
+    "username": "nurse1",
+    "password_hash": "35608f3146571aa100227a3e68290979ba8a452179a080f888625106076e7de2",
+    "role": "nurse",
+    "full_name": "Emily Rodriguez",
+    "email": "nurse1@maximacentrum.nl",
+    "phone": "+31-88-972-7273",
+    "created_at": "2025-01-01T00:00:00",
+    "is_active": true
+  },
+  {
+    "user_id": "U003",
+    "username": "nurse2",
+    "password_hash": "35608f3146571aa100227a3e68290979ba8a452179a080f888625106076e7de2",
+    "role": "nurse",
+    "full_name": "Michael Chen",
+    "email": "nurse2@maximacentrum.nl",
+    "phone": "+31-88-972-7274",
+    "created_at": "2025-01-01T00:00:00",
+    "is_active": true
+  },
+  {
+    "user_id": "U004",
+    "username": "family1",
+    "password_hash": "0de502ac9741cf67868b8341dd858ef95822cb80ef8d616916afb6fa1654f85d",
+    "role": "family",
+    "full_name": "John Thompson",
+    "email": "family1@example.com",
+    "phone": "+31-6-12345678",
+    "created_at": "2025-01-01T00:00:00",
+    "is_active": true
+  }
+]

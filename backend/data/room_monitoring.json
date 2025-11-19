@@ -1,0 +1,137 @@
+{
+  "room_101": {
+    "room_id": "room_101",
+    "patient_name": "Alex Thompson",
+    "patient_id": "P001",
+    "ai_is_active": true,
+    "ai_mode": "automatic",
+    "last_updated": "2025-11-19T14:04:52.620114",
+    "current_ai_settings": {
+      "light_hex_color": "#ffaa77",
+      "light_brightness": 0.4,
+      "music_playlist_id": "calm_ambient",
+      "music_volume": 0.2,
+      "temperature": 72,
+      "ai_reasoning": "Patient data shows light sleep. Promoting calm."
+    },
+    "manual_overrides": {
+      "is_active": false,
+      "brightness": 50.0,
+      "volume": 30.0,
+      "overridden_by": "admin",
+      "overridden_at": "2025-11-19T14:04:48.027882"
+    },
+    "patient_status": "stable",
+    "heart_rate": 65,
+    "oxygen_level": 98,
+    "sleep_stage": "light_sleep",
+    "pain_detected": false
+  },
+  "room_102": {
+    "room_id": "room_102",
+    "patient_name": "Maria Garcia",
+    "patient_id": "P002",
+    "ai_is_active": true,
+    "ai_mode": "automatic",
+    "last_updated": "2025-11-19T14:00:00",
+    "current_ai_settings": {
+      "light_hex_color": "#FFD699",
+      "light_brightness": 0.6,
+      "music_playlist_id": "upbeat_morning",
+      "music_volume": 0.3,
+      "temperature": 71,
+      "ai_reasoning": "Morning wake cycle. Energizing environment."
+    },
+    "manual_overrides": {
+      "is_active": false,
+      "brightness": 50.0,
+      "volume": 30.0
+    },
+    "patient_status": "stable",
+    "heart_rate": 72,
+    "oxygen_level": 97,
+    "sleep_stage": "awake",
+    "pain_detected": false
+  },
+  "room_103": {
+    "room_id": "room_103",
+    "patient_name": "Sophie van Berg",
+    "patient_id": "P003",
+    "ai_is_active": true,
+    "ai_mode": "automatic",
+    "last_updated": "2025-11-19T14:00:00",
+    "current_ai_settings": {
+      "light_hex_color": "#FFE4B5",
+      "light_brightness": 0.7,
+      "music_playlist_id": "children_playful",
+      "music_volume": 0.25,
+      "temperature": 72,
+      "ai_reasoning": "Active child. Playful environment during recovery."
+    },
+    "manual_overrides": {
+      "is_active": false,
+      "brightness": 0.7,
+      "volume": 0.25,
+      "temperature": 72
+    },
+    "patient_status": "stable",
+    "heart_rate": 80,
+    "oxygen_level": 99,
+    "sleep_stage": "awake",
+    "pain_detected": false
+  },
+  "room_104": {
+    "room_id": "room_104",
+    "patient_name": "Liam Chen",
+    "patient_id": "P004",
+    "ai_is_active": true,
+    "ai_mode": "automatic",
+    "last_updated": "2025-11-19T15:00:00",
+    "current_ai_settings": {
+      "light_hex_color": "#B8E6F0",
+      "light_brightness": 0.5,
+      "music_playlist_id": "soft_instrumental",
+      "music_volume": 0.2,
+      "temperature": 71,
+      "ai_reasoning": "Rest period. Calming blue light and soft music."
+    },
+    "manual_overrides": {
+      "is_active": false,
+      "brightness": 0.5,
+      "volume": 0.2,
+      "temperature": 71
+    },
+    "patient_status": "stable",
+    "heart_rate": 68,
+    "oxygen_level": 98,
+    "sleep_stage": "light_sleep",
+    "pain_detected": false
+  },
+  "room_105": {
+    "room_id": "room_105",
+    "patient_name": "Emma Johnson",
+    "patient_id": "P005",
+    "ai_is_active": true,
+    "ai_mode": "automatic",
+    "last_updated": "2025-11-19T15:00:00",
+    "current_ai_settings": {
+      "light_hex_color": "#FFD1DC",
+      "light_brightness": 0.6,
+      "music_playlist_id": "disney_classics",
+      "music_volume": 0.25,
+      "temperature": 72,
+      "ai_reasoning": "Awake and active. Cheerful pink lighting with Disney music."
+    },
+    "manual_overrides": {
+      "is_active": false,
+      "brightness": 0.6,
+      "volume": 0.25,
+      "temperature": 72
+    },
+    "patient_status": "stable",
+    "heart_rate": 75,
+    "oxygen_level": 99,
+    "sleep_stage": "awake",
+    "pain_detected": false
+  }
+}

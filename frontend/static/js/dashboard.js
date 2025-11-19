@@ -1,0 +1,915 @@
+/**
+ * Dashboard JavaScript
+ * Main dashboard functionality
+ */
+
+let currentUser = null;
+let rooms = [];
+let refreshInterval = null;
+
+/**
+ * Initialize dashboard
+ */
+async function initDashboard() {
+    console.log('🚀 [DASHBOARD] Initialization started');
+    console.log('🔍 [DASHBOARD] window.api available?', typeof window.api !== 'undefined');
+    console.log('🔍 [DASHBOARD] window.api.getCurrentUser available?', typeof window.api?.getCurrentUser === 'function');
+    
+    try {
+        // Check if API is available
+        if (!window.api) {
+            throw new Error('API module not loaded');
+        }
+        
+        // Load user info
+        console.log('📡 [DASHBOARD] Fetching current user...');
+        const userData = await window.api.getCurrentUser();
+        console.log('✅ [DASHBOARD] User data received:', userData);
+        currentUser = userData.user;  // Extract user object from response
+        displayUserInfo();
+        
+        // Show admin button for admin users
+        if (currentUser.role === 'admin') {
+            document.getElementById('adminButton').style.display = 'block';
+        }
+        
+        // Load rooms
+        console.log('🏥 [DASHBOARD] Loading rooms...');
+        await loadRooms();
+        console.log('✅ [DASHBOARD] Rooms loaded successfully');
+        
+        // Check for notifications (nurses and admins)
+        if (currentUser.role === 'nurse' || currentUser.role === 'admin') {
+            await checkNotifications();
+            // Check notifications every 30 seconds
+            setInterval(checkNotifications, 30000);
+        }
+        
+        // Start auto-refresh every 5 seconds
+        refreshInterval = setInterval(loadRooms, 5000);
+        
+    } catch (error) {
+        console.error('❌ [DASHBOARD] Initialization error:', error);
+        console.error('❌ [DASHBOARD] Error stack:', error.stack);
+        showError('Failed to load dashboard. Please try again.');
+    }
+}
+
+/**
+ * Display user info in header
+ */
+function displayUserInfo() {
+    if (currentUser) {
+        document.getElementById('userName').textContent = currentUser.username;
+        document.getElementById('userRole').textContent = currentUser.role.toUpperCase();
+    }
+}
+
+/**
+ * Load all rooms
+ */
+async function loadRooms() {
+    try {
+        console.log('📡 Calling getRooms API...');
+        const data = await window.api.getRooms();
+        console.log('✅ Rooms data received:', data);
+        console.log('📊 Number of rooms:', data?.rooms?.length);
+        console.log('🔍 First room sample:', data?.rooms?.[0]);
+        rooms = data.rooms;
+        
+        hideLoading();
+        displayRooms();
+        updateStats();
+        
+    } catch (error) {
+        console.error('❌ Error loading rooms:', error);
+        hideLoading();
+        showError('Failed to load room data');
+    }
+}
+
+/**
+ * Display rooms in grid
+ */
+function displayRooms() {
+    const container = document.getElementById('roomsContainer');
+    
+    console.log('🎨 Displaying rooms, count:', rooms.length);
+    rooms.forEach((room, idx) => {
+        console.log(`🏥 Room ${idx}:`, {
+            room_id: room.room_id,
+            room_number: room.room_number,
+            patient_name: room.patient_name,
+            has_vitals: !!room.vitals
+        });
+    });
+    
+    if (rooms.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #718096;">No rooms available</p>';
+        return;
+    }
+    
+    container.innerHTML = rooms.map(room => {
+        // Determine health status based on vitals
+        const hr = room.vitals.heart_rate;
+        const spo2 = room.vitals.spo2;
+        const painDetected = room.current_state.pain_detected;
+        
+        let healthStatus = 'stable';
+        let healthIcon = '✅';
+        let healthColor = '#10B981';
+        let healthBg = 'rgba(16, 185, 129, 0.15)';
+        
+        if (painDetected || hr > 100 || spo2 < 95) {
+            healthStatus = 'needs attention';
+            healthIcon = '⚠️';
+            healthColor = '#FFA726';
+            healthBg = 'rgba(255, 167, 38, 0.15)';
+        } else if (hr < 50 || hr > 110) {
+            healthStatus = 'alert';
+            healthIcon = '🚨';
+            healthColor = '#EF5350';
+            healthBg = 'rgba(239, 83, 80, 0.15)';
+        }
+        
+        // Get AI action description
+        const aiAction = getAIActionDescription(room);
+        
+        // Initialize assistant for this room
+        setTimeout(() => initAssistant(room.room_id, room), 100);
+        
+        return `
+        <div class="room-card">
+            <div class="room-header" onclick="showRoomDetails('${room.room_id}')">
+                <div class="room-header-main">
+                    <div class="room-number">${room.room_number}</div>
+                    <div class="patient-name">Patient: ${room.patient_name}</div>
+                    <div class="health-status" style="color: ${healthColor}; background: ${healthBg}; font-weight: 700; border: 2px solid ${healthColor};">
+                        ${healthIcon} ${healthStatus.toUpperCase()}
+                    </div>
+                </div>
+                <button class="assistant-button" onclick="event.stopPropagation(); toggleAssistant('${room.room_id}')" title="AI Medical Assistant">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        <circle cx="9" cy="10" r="1"></circle>
+                        <circle cx="15" cy="10" r="1"></circle>
+                        <path d="M9.5 14.5s1 1 2.5 1 2.5-1 2.5-1"></path>
+                    </svg>
+                    <span>AI Assistant</span>
+                </button>
+            </div>
+            <div class="room-body">
+                <div class="vitals-grid">
+                    <div class="vital-item">
+                        <span class="vital-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            </svg>
+                        </span>
+                        <span class="vital-value">${room.vitals.heart_rate} bpm</span>
+                    </div>
+                    <div class="vital-item">
+                        <span class="vital-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
+                            </svg>
+                        </span>
+                        <span class="vital-value">${room.vitals.temperature}°F</span>
+                    </div>
+                    <div class="vital-item">
+                        <span class="vital-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18V5l12-2v13M9 9l12-2"/>
+                                <circle cx="6" cy="18" r="3"/>
+                                <circle cx="18" cy="16" r="3"/>
+                            </svg>
+                        </span>
+                        <span class="vital-value">${room.vitals.respiratory_rate}/min</span>
+                    </div>
+                    <div class="vital-item">
+                        <span class="vital-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                            </svg>
+                        </span>
+                        <span class="vital-value">${room.vitals.spo2}% SpO2</span>
+                    </div>
+                </div>
+                
+                <div class="patient-state-section">
+                    <span class="sleep-stage stage-${room.current_state.sleep_stage.toLowerCase().replace(' ', '-')}">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                        </svg>
+                        ${room.current_state.sleep_stage}
+                    </span>
+                    ${painDetected ? `<span class="pain-indicator">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                        Pain Detected
+                    </span>` : ''}
+                </div>
+                
+                <div class="ai-status-section">
+                    <div class="ai-status-badge ${room.ai_control_active ? 'ai-active' : 'ai-override'}">
+                        ${room.ai_control_active ? `
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                            AI ACTIVE
+                        ` : `
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            MANUAL
+                        `}
+                    </div>
+                    ${room.ai_control_active ? `
+                        <div class="ai-actions">
+                            <div class="ai-action-title">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                AI Actions:
+                            </div>
+                            <div class="ai-action-item">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="5"/>
+                                    <line x1="12" y1="1" x2="12" y2="3"/>
+                                    <line x1="12" y1="21" x2="12" y2="23"/>
+                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                    <line x1="1" y1="12" x2="3" y2="12"/>
+                                    <line x1="21" y1="12" x2="23" y2="12"/>
+                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                                </svg>
+                                Light: ${aiAction.light}
+                            </div>
+                            <div class="ai-action-item">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18V5l12-2v13"/>
+                                    <circle cx="6" cy="18" r="3"/>
+                                    <circle cx="18" cy="16" r="3"/>
+                                </svg>
+                                Music: ${aiAction.music}
+                            </div>
+                            <div class="ai-reasoning">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                ${aiAction.reasoning}
+                            </div>
+                        </div>
+                    ` : `<div class="manual-mode-text">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        Staff controlling environment
+                    </div>`}
+                </div>
+            </div>
+        </div>
+        `;
+    }).join('');
+    
+    // Create assistant modals and append to body
+    rooms.forEach(room => {
+        createAssistantModal(room);
+    });
+}
+
+/**
+ * Create assistant modal for a room and append to body
+ */
+function createAssistantModal(room) {
+    // Remove existing modal if any
+    const existingModal = document.getElementById(`assistant-modal-${room.room_id}`);
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    const modalHTML = `
+        <div id="assistant-modal-${room.room_id}" class="assistant-modal-overlay" style="display: none;">
+            <div class="assistant-modal-content">
+                <div class="assistant-modal-header">
+                    <div class="assistant-modal-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            <circle cx="9" cy="10" r="1"></circle>
+                            <circle cx="15" cy="10" r="1"></circle>
+                            <path d="M9.5 14.5s1 1 2.5 1 2.5-1 2.5-1"></path>
+                        </svg>
+                        <span>AI Medical Assistant - ${room.patient_name}</span>
+                    </div>
+                    <button class="assistant-close-btn" onclick="event.stopPropagation(); toggleAssistant('${room.room_id}')">&times;</button>
+                </div>
+                <div id="chat-messages-${room.room_id}" class="assistant-chat-messages">
+                    <div class="assistant-message system">
+                        Hi! I'm your AI assistant for ${room.patient_name} in ${room.room_number}. 
+                        You can ask me about the patient's vitals, sleep status, pain levels, or environment settings. 
+                        Try asking "How is the patient?" or click the 🎤 to speak!
+                    </div>
+                </div>
+                <div class="assistant-status" id="assistant-status-${room.room_id}">Ready</div>
+                <div class="assistant-input-controls">
+                    <input type="text" id="assistant-input-${room.room_id}" class="assistant-text-input" placeholder="Type your question or click mic to speak..." onclick="event.stopPropagation();" onfocus="event.stopPropagation();" onkeypress="if(event.key==='Enter') { event.preventDefault(); event.stopPropagation(); window.handleAssistantQuery('${room.room_id}', event); }">
+                    <button class="assistant-send-btn" onclick="event.stopPropagation(); window.handleAssistantQuery('${room.room_id}', event)" title="Send message">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                    <button class="assistant-mic-btn" id="assistant-mic-${room.room_id}" onclick="event.stopPropagation(); window.toggleVoiceInput('${room.room_id}', event)" title="Voice input">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                            <line x1="12" y1="19" x2="12" y2="23"></line>
+                            <line x1="8" y1="23" x2="16" y2="23"></line>
+                        </svg>
+                    </button>
+                    <button class="assistant-speaker-btn" id="assistant-speaker-${room.room_id}" onclick="event.stopPropagation(); window.toggleSpeaker('${room.room_id}', event)" title="Mute/Unmute">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Add proper click handler to close only when clicking the overlay background
+    const modalOverlay = document.getElementById(`assistant-modal-${room.room_id}`);
+    const modalContent = modalOverlay?.querySelector('.assistant-modal-content');
+    const chatMessages = document.getElementById(`chat-messages-${room.room_id}`);
+    const inputField = document.getElementById(`assistant-input-${room.room_id}`);
+    
+    if (modalOverlay) {
+        // Close only when clicking the dark overlay background
+        modalOverlay.addEventListener('click', function(event) {
+            if (event.target === modalOverlay) {
+                toggleAssistant(room.room_id);
+            }
+        });
+    }
+    
+    // Prevent all events from bubbling out of modal content
+    if (modalContent) {
+        modalContent.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+    }
+    
+    // Prevent scroll events from bubbling
+    if (chatMessages) {
+        chatMessages.addEventListener('wheel', function(event) {
+            event.stopPropagation();
+        });
+        chatMessages.addEventListener('touchmove', function(event) {
+            event.stopPropagation();
+        });
+    }
+    
+    // Prevent input field events from causing issues
+    if (inputField) {
+        inputField.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+        inputField.addEventListener('focus', function(event) {
+            event.stopPropagation();
+        });
+        inputField.addEventListener('input', function(event) {
+            event.stopPropagation();
+        });
+    }
+}
+
+/**
+ * Get AI action description based on room environment
+ */
+function getAIActionDescription(room) {
+    const env = room.environment || {};
+    const sleepStage = room.current_state.sleep_stage || 'AWAKE';
+    const painDetected = room.current_state.pain_detected || false;
+    
+    // Determine light description
+    let lightDesc = '';
+    const brightness = Math.round((env.light_brightness || 0.5) * 100);
+    const lightColor = env.light_hex_color || '#FFFFFF';
+    
+    if (brightness <= 10) {
+        lightDesc = `Dim (${brightness}%)`;
+    } else if (brightness <= 40) {
+        lightDesc = `Low (${brightness}%)`;
+    } else if (brightness <= 70) {
+        lightDesc = `Medium (${brightness}%)`;
+    } else {
+        lightDesc = `Bright (${brightness}%)`;
+    }
+    
+    // Add color description
+    if (lightColor.toLowerCase().includes('ff6') || lightColor.toLowerCase().includes('ff7')) {
+        lightDesc += ', Red therapy';
+    } else if (lightColor.toLowerCase().includes('ffa') || lightColor.toLowerCase().includes('ffb')) {
+        lightDesc += ', Amber';
+    } else if (lightColor.toLowerCase().includes('ffd') || lightColor.toLowerCase().includes('ffe')) {
+        lightDesc += ', Warm';
+    } else if (lightColor.toLowerCase().includes('e0f') || lightColor.toLowerCase().includes('e8f')) {
+        lightDesc += ', Blue-enriched';
+    } else {
+        lightDesc += ', Neutral';
+    }
+    
+    // Determine music description
+    let musicDesc = '';
+    const volume = Math.round((env.music_volume || 0.2) * 100);
+    const playlist = env.music_playlist_id || 'calm_ambient';
+    
+    if (playlist.includes('sleep') || playlist.includes('binaural')) {
+        musicDesc = `Sleep therapy (${volume}%)`;
+    } else if (playlist.includes('healing') || playlist.includes('pain')) {
+        musicDesc = `Healing frequencies (${volume}%)`;
+    } else if (playlist.includes('upbeat') || playlist.includes('morning')) {
+        musicDesc = `Energizing (${volume}%)`;
+    } else if (playlist.includes('calm') || playlist.includes('ambient')) {
+        musicDesc = `Calming (${volume}%)`;
+    } else {
+        musicDesc = `Ambient (${volume}%)`;
+    }
+    
+    // Generate reasoning based on patient state
+    let reasoning = '';
+    if (painDetected) {
+        reasoning = '🔴 Applying pain relief therapy';
+    } else if (sleepStage.includes('DEEP')) {
+        reasoning = '💤 Supporting deep sleep recovery';
+    } else if (sleepStage.includes('LIGHT') || sleepStage.includes('REM')) {
+        reasoning = '😴 Maintaining sleep environment';
+    } else if (sleepStage.includes('AWAKE')) {
+        const hour = new Date().getHours();
+        if (hour >= 6 && hour < 12) {
+            reasoning = '☀️ Morning wake-up support';
+        } else if (hour >= 12 && hour < 18) {
+            reasoning = '☀️ Optimal daytime environment';
+        } else if (hour >= 18 && hour < 22) {
+            reasoning = '🌙 Evening relaxation mode';
+        } else {
+            reasoning = '🌙 Nighttime rest preparation';
+        }
+    } else {
+        reasoning = '🤖 Optimizing patient comfort';
+    }
+    
+    return {
+        light: lightDesc,
+        music: musicDesc,
+        reasoning: reasoning
+    };
+}
+
+/**
+ * Update stats cards
+ */
+function updateStats() {
+    const totalRooms = rooms.length;
+    const activeAI = rooms.filter(r => r.ai_control_active).length;
+    const sleeping = rooms.filter(r => r.current_state.sleep_stage !== 'AWAKE').length;
+    const alerts = rooms.filter(r => r.current_state.pain_detected).length;
+    
+    document.getElementById('totalRooms').textContent = totalRooms;
+    document.getElementById('activeAI').textContent = activeAI;
+    document.getElementById('sleeping').textContent = sleeping;
+    document.getElementById('alerts').textContent = alerts;
+}
+
+/**
+ * Show room details modal
+ */
+async function showRoomDetails(roomId) {
+    try {
+        const data = await window.api.getRoomData(roomId);
+        const room = data.room;
+        
+        document.getElementById('modalTitle').textContent = `${room.room_number} - ${room.patient_name}`;
+        
+        document.getElementById('modalBody').innerHTML = `
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div>
+                    <h3 style="margin-bottom: 15px;">Vital Signs</h3>
+                    <div style="display: grid; gap: 10px;">
+                        <div><strong>Heart Rate:</strong> ${room.vitals.heart_rate} bpm</div>
+                        <div><strong>Temperature:</strong> ${room.vitals.temperature}°F</div>
+                        <div><strong>Respiratory Rate:</strong> ${room.vitals.respiratory_rate}/min</div>
+                        <div><strong>SpO2:</strong> ${room.vitals.spo2}%</div>
+                        <div><strong>Blood Pressure:</strong> ${room.vitals.blood_pressure}</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 style="margin-bottom: 15px;">Current State</h3>
+                    <div style="display: grid; gap: 10px;">
+                        <div><strong>Sleep Stage:</strong> ${room.current_state.sleep_stage}</div>
+                        <div><strong>Pain Detected:</strong> ${room.current_state.pain_detected ? '⚠️ Yes' : '✅ No'}</div>
+                        <div><strong>Movement:</strong> ${room.current_state.movement_level}</div>
+                        <div><strong>AI Control:</strong> ${room.ai_control_active ? '✅ Active' : '⏸️ Paused'}</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 style="margin-bottom: 15px;">Environment</h3>
+                    <div style="display: grid; gap: 10px;">
+                        <div><strong>Light Level:</strong> ${room.environment.light_level}%</div>
+                        <div><strong>Light Color:</strong> ${room.environment.light_color} K</div>
+                        <div><strong>Music Volume:</strong> ${room.environment.music_volume}%</div>
+                        <div><strong>Music Type:</strong> ${room.environment.music_type}</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 style="margin-bottom: 15px;">AI Insights</h3>
+                    <div style="display: grid; gap: 10px; font-size: 13px;">
+                        <div>${room.ai_insights.sleep_quality}</div>
+                        <div>${room.ai_insights.circadian_status}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                <button onclick="toggleAI('${room.room_id}', ${room.ai_control_active})" 
+                        class="logout-button" 
+                        style="background: ${room.ai_control_active ? '#ed8936' : '#48bb78'}; width: auto;">
+                    ${room.ai_control_active ? 'Pause AI Control' : 'Resume AI Control'}
+                </button>
+            </div>
+        `;
+        
+        document.getElementById('roomModal').style.display = 'flex';
+        
+    } catch (error) {
+        console.error('Error loading room details:', error);
+        alert('Failed to load room details');
+    }
+}
+
+/**
+ * Toggle AI control
+ */
+async function toggleAI(roomId, isActive) {
+    try {
+        console.log(`[TOGGLE AI] Room: ${roomId}, Currently Active: ${isActive}`);
+        
+        const API_BASE = window.API_BASE || '/api';
+        let response;
+        
+        if (isActive) {
+            // Pause AI - set manual override
+            console.log('[TOGGLE AI] Pausing AI control...');
+            response = await fetch(`${API_BASE}/rooms/${roomId}/override`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                credentials: 'include',
+                body: JSON.stringify({
+                    brightness: 50,
+                    volume: 30
+                })
+            });
+        } else {
+            // Resume AI control
+            console.log('[TOGGLE AI] Resuming AI control...');
+            response = await fetch(`${API_BASE}/rooms/${roomId}/resume`, {
+                method: 'POST',
+                credentials: 'include'
+            });
+        }
+        
+        const data = await response.json();
+        console.log('[TOGGLE AI] Response:', data);
+        
+        if (data.success) {
+            alert(data.message);
+            closeModal();
+            await loadRooms();
+        } else {
+            alert('Failed: ' + (data.error || 'Unknown error'));
+        }
+        
+    } catch (error) {
+        console.error('❌ Error toggling AI:', error);
+        alert('Failed to toggle AI control');
+    }
+}
+
+/**
+ * Close modal
+ */
+function closeModal() {
+    document.getElementById('roomModal').style.display = 'none';
+}
+
+/**
+ * Show error message
+ */
+function showError(message) {
+    document.getElementById('errorText').textContent = message;
+    document.getElementById('errorMessage').style.display = 'block';
+}
+
+/**
+ * Hide loading indicator
+ */
+function hideLoading() {
+    document.getElementById('loadingIndicator').style.display = 'none';
+}
+
+/**
+ * Check for critical patient notifications
+ */
+async function checkNotifications() {
+    try {
+        const API_BASE = window.API_BASE || '/api';
+        const response = await fetch(`${API_BASE}/notifications/unread`, {
+            credentials: 'include'
+        });
+        
+        if (!response.ok) return;
+        
+        const data = await response.json();
+        
+        if (data.success && data.count > 0) {
+            // Show notifications
+            displayNotifications(data.notifications);
+        }
+    } catch (error) {
+        console.error('Error checking notifications:', error);
+    }
+}
+
+/**
+ * Display critical notifications
+ */
+function displayNotifications(notifications) {
+    // Create notification container if it doesn't exist
+    let container = document.getElementById('notificationContainer');
+    
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'notificationContainer';
+        container.style.cssText = `
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        `;
+        document.body.appendChild(container);
+    }
+    
+    // Clear old notifications
+    container.innerHTML = '';
+    
+    // Show each notification
+    notifications.forEach(notif => {
+        const notifDiv = document.createElement('div');
+        notifDiv.className = 'notification-alert';
+        notifDiv.style.cssText = `
+            background: #fff;
+            border-left: 4px solid #f56565;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease-out;
+        `;
+        
+        notifDiv.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; color: #c53030; margin-bottom: 4px;">
+                        🚨 CRITICAL ALERT
+                    </div>
+                    <div style="color: #333; font-size: 14px;">
+                        ${notif.message}
+                    </div>
+                    <div style="color: #666; font-size: 12px; margin-top: 4px;">
+                        ${new Date(notif.created_at).toLocaleString()}
+                    </div>
+                </div>
+                <button onclick="dismissNotification('${notif.id}')" 
+                        style="background: none; border: none; font-size: 20px; cursor: pointer; color: #999;">
+                    ×
+                </button>
+            </div>
+        `;
+        
+        container.appendChild(notifDiv);
+        
+        // Auto-dismiss after 30 seconds
+        setTimeout(() => {
+            if (notifDiv.parentNode) {
+                notifDiv.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => notifDiv.remove(), 300);
+            }
+        }, 30000);
+    });
+}
+
+/**
+ * Dismiss a notification
+ */
+async function dismissNotification(notificationId) {
+    try {
+        const API_BASE = window.API_BASE || '/api';
+        await fetch(`${API_BASE}/notifications/${notificationId}/read`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+        
+        // Remove from UI
+        const notifElements = document.querySelectorAll('.notification-alert');
+        notifElements.forEach(el => {
+            if (el.innerHTML.includes(notificationId)) {
+                el.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => el.remove(), 300);
+            }
+        });
+    } catch (error) {
+        console.error('Error dismissing notification:', error);
+    }
+}
+
+// Add CSS animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', initDashboard);
+
+// Navigate to admin page
+function goToAdmin() {
+    window.location.href = '/admin';
+}
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+    }
+});
+
+/**
+ * Toggle AI Assistant modal
+ */
+window.toggleAssistant = function(roomId) {
+    // Close any open modals first
+    const allModals = document.querySelectorAll('.assistant-modal-overlay');
+    allModals.forEach(modal => {
+        if (modal.id !== `assistant-modal-${roomId}`) {
+            modal.style.display = 'none';
+            // Stop any ongoing speech
+            const modalRoomId = modal.id.replace('assistant-modal-', '');
+            if (window.assistants && window.assistants[modalRoomId]) {
+                window.assistants[modalRoomId].stopSpeaking();
+            }
+        }
+    });
+    
+    const modal = document.getElementById(`assistant-modal-${roomId}`);
+    if (modal) {
+        if (modal.style.display === 'none' || modal.style.display === '') {
+            modal.style.display = 'flex';
+            // Scroll to bottom of chat
+            const chatMessages = document.getElementById(`chat-messages-${roomId}`);
+            if (chatMessages) {
+                setTimeout(() => {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 100);
+            }
+        } else {
+            modal.style.display = 'none';
+            // Stop any ongoing speech
+            if (window.assistants && window.assistants[roomId]) {
+                window.assistants[roomId].stopSpeaking();
+            }
+        }
+    }
+};
+
+/**
+ * Handle text query from assistant
+ */
+window.handleAssistantQuery = function(roomId, event) {
+    if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+    const input = document.getElementById(`assistant-input-${roomId}`);
+    if (input && input.value.trim()) {
+        const query = input.value.trim();
+        input.value = '';
+        
+        if (window.assistants && window.assistants[roomId]) {
+            window.assistants[roomId].handleUserQuery(query);
+        }
+    }
+};
+
+/**
+ * Toggle voice input
+ */
+window.toggleVoiceInput = function(roomId, event) {
+    if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+    if (window.assistants && window.assistants[roomId]) {
+        window.assistants[roomId].toggleVoiceInput();
+    }
+};
+
+/**
+ * Toggle speaker (mute/unmute)
+ */
+window.toggleSpeaker = function(roomId, event) {
+    if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+    const assistant = window.assistants && window.assistants[roomId];
+    if (assistant) {
+        assistant.isMuted = !assistant.isMuted;
+        const speakerBtn = document.getElementById(`assistant-speaker-${roomId}`);
+        if (speakerBtn) {
+            if (assistant.isMuted) {
+                speakerBtn.classList.add('muted');
+                speakerBtn.textContent = '🔇';
+                assistant.stopSpeaking();
+            } else {
+                speakerBtn.classList.remove('muted');
+                speakerBtn.textContent = '🔊';
+            }
+        }
+    }
+};
+
+/**
+ * Initialize assistant for a room
+ */
+window.initAssistant = function(roomId, roomData) {
+    if (typeof SmartAssistant === 'undefined') {
+        console.warn('SmartAssistant class not loaded yet for room:', roomId);
+        return;
+    }
+    
+    if (!window.assistants) {
+        window.assistants = {};
+    }
+    
+    try {
+        window.assistants[roomId] = new SmartAssistant(roomId, roomData);
+        console.log('✅ Assistant initialized for room:', roomId);
+    } catch (error) {
+        console.error('Error initializing assistant for room:', roomId, error);
+    }
+};
+
+// Export functions for inline onclick handlers
+window.showRoomDetails = showRoomDetails;
+window.closeModal = closeModal;
+window.toggleAI = toggleAI;
+window.dismissNotification = dismissNotification;

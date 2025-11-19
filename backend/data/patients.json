@@ -1,0 +1,102 @@
+[
+  {
+    "patient_id": "P001",
+    "patient_name": "Alex Thompson",
+    "age": 8,
+    "gender": "Male",
+    "diagnosis": "Acute Lymphoblastic Leukemia (ALL)",
+    "admission_date": "2025-10-15",
+    "room_id": "room_101",
+    "emergency_contact": {
+      "name": "John Thompson",
+      "relation": "Father",
+      "phone": "+31-6-12345678"
+    },
+    "medical_history": "No prior conditions",
+    "allergies": "None known",
+    "blood_type": "O+",
+    "is_active": true,
+    "created_at": "2025-10-15T08:30:00",
+    "updated_at": "2025-11-19T12:00:00"
+  },
+  {
+    "patient_id": "P002",
+    "patient_name": "Maria Garcia",
+    "age": 12,
+    "gender": "Female",
+    "diagnosis": "Neuroblastoma Stage 3",
+    "admission_date": "2025-09-20",
+    "room_id": "room_102",
+    "emergency_contact": {
+      "name": "Rosa Garcia",
+      "relation": "Mother",
+      "phone": "+31-6-23456789"
+    },
+    "medical_history": "Asthma (controlled)",
+    "allergies": "Penicillin",
+    "blood_type": "A+",
+    "is_active": true,
+    "created_at": "2025-09-20T10:15:00",
+    "updated_at": "2025-11-19T13:35:51"
+  },
+  {
+    "patient_id": "P003",
+    "patient_name": "Sophie van Berg",
+    "age": 6,
+    "gender": "Female",
+    "diagnosis": "Wilms Tumor",
+    "admission_date": "2025-11-01",
+    "room_id": "room_103",
+    "emergency_contact": {
+      "name": "Peter van Berg",
+      "relation": "Father",
+      "phone": "+31-6-34567890"
+    },
+    "medical_history": "None",
+    "allergies": "Latex",
+    "blood_type": "B+",
+    "is_active": true,
+    "created_at": "2025-11-01T09:00:00",
+    "updated_at": "2025-11-19T14:20:30"
+  },
+  {
+    "patient_id": "P004",
+    "patient_name": "Liam Chen",
+    "age": 10,
+    "gender": "Male",
+    "diagnosis": "Osteosarcoma",
+    "admission_date": "2025-11-10",
+    "room_id": "room_104",
+    "emergency_contact": {
+      "name": "Wei Chen",
+      "relation": "Mother",
+      "phone": "+31-6-45678901"
+    },
+    "medical_history": "None",
+    "allergies": "None known",
+    "blood_type": "AB+",
+    "is_active": true,
+    "created_at": "2025-11-10T11:30:00",
+    "updated_at": "2025-11-19T15:00:00"
+  },
+  {
+    "patient_id": "P005",
+    "patient_name": "Emma Johnson",
+    "age": 7,
+    "gender": "Female",
+    "diagnosis": "Hodgkin Lymphoma",
+    "admission_date": "2025-11-05",
+    "room_id": "room_105",
+    "emergency_contact": {
+      "name": "Sarah Johnson",
+      "relation": "Mother",
+      "phone": "+31-6-56789012"
+    },
+    "medical_history": "None",
+    "allergies": "Peanuts",
+    "blood_type": "O-",
+    "is_active": true,
+    "created_at": "2025-11-05T14:45:00",
+    "updated_at": "2025-11-19T15:00:00"
+  }
+]

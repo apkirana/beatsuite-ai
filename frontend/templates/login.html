@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beat Suite AI - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}?v=13">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo-section">
+                <img src="{{ url_for('static', filename='images/maxima-logo.svg') }}" alt="Prinses Máxima Centrum" class="logo-img" onerror="this.style.display='none'">
+                <h1>Beat Suite AI</h1>
+                <p class="tagline">Intelligent Patient Monitoring System</p>
+                <p class="location-info">Prinses Máxima Centrum voor kinderoncologie<br>Heidelberglaan 25, 3584 CS Utrecht</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div id="error-message" class="error-message" style="display: none;"></div>
+                
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        placeholder="Enter your username"
+                        required
+                        autocomplete="username"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password"
+                    >
+                </div>
+                
+                <button type="submit" class="login-button" id="loginButton">
+                    <span id="buttonText">Sign In</span>
+                    <span id="buttonSpinner" class="spinner" style="display: none;">⟳</span>
+                </button>
+            </form>
+            
+            <div class="demo-credentials">
+                <p><strong>Demo Credentials:</strong></p>
+                <div class="credentials-grid">
+                    <div class="credential-item">
+                        <strong>Admin:</strong> admin / admin123
+                    </div>
+                    <div class="credential-item">
+                        <strong>Nurse:</strong> nurse1 / nurse123
+                    </div>
+                    <div class="credential-item">
+                        <strong>Family:</strong> family1 / family123
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2025 Beat Suite AI. All rights reserved.</p>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/auth.js') }}?v=10"></script>
+</body>
+</html>
