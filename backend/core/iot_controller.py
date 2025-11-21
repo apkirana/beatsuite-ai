@@ -7,6 +7,11 @@ Integrates with Philips Hue, LIFX, Sonos, etc.
 import logging
 from typing import Dict
 import time
+import json
+import os
+import re
+
+import paho.mqtt.client as mqtt
 
 logger = logging.getLogger(__name__)
 
@@ -59,10 +64,77 @@ class SmartLightController:
     
     def _philips_hue_command(self, room_id: str, hex_color: str, brightness: float):
         """Philips Hue Bridge API integration"""
-        # Requires: Hue Bridge IP, API key
-        # PUT /api/<username>/lights/<id>/state
-        logger.info("Philips Hue integration - Not yet implemented")
-        return False
+        # Publishes a JSON command to an MQTT broker so a bridge/gateway can
+        # translate it to the Philips Hue Bridge API. Default broker is
+        # `test.mosquitto.org` and default topic is `philips_hue/command/<room_id>`.
+        # Example payload:
+        # {
+        #     "light_id": 1,
+        #     "on": true,
+        #     "brightness": 0-100,
+        #     "color": "#ff0000"
+        # }
+        try:
+            broker = os.getenv('MQTT_BROKER', 'test.mosquitto.org')
+            port = int(os.getenv('MQTT_PORT', '1883'))
+            topic = os.getenv('MQTT_TOPIC', f'hue/command')
+
+            # Try to derive a numeric light_id from the room_id; fallback to 1
+            light_id = 1
+            # try:
+            #     m = re.search(r"(\d+)$", str(room_id))
+            #     if m:
+            #         light_id = int(m.group(1))
+            # except Exception:
+            #     pass
+
+            on = bool(brightness and brightness > 0.0)
+            brightness_pct = max(0, min(100, int(round((brightness or 0.0) * 100))))
+
+            payload = {
+                "light_id": light_id,
+                "on": on,
+                "brightness": brightness_pct,
+                "color": hex_color
+            }
+
+            client = mqtt.Client()
+            # Connect and publish
+            client.connect(broker, port, 60)
+            client.loop_start()
+            info = client.publish(topic, json.dumps(payload), qos=1)
+            # Wait up to a few seconds for publish to complete
+            try:
+                info.wait_for_publish(timeout=5)
+            except Exception:
+                pass
+            published = getattr(info, 'is_published', None)
+            success = False
+            if callable(published):
+                success = info.is_published()
+            else:
+                # fallback: check rc
+                success = getattr(info, 'rc', 1) == mqtt.MQTT_ERR_SUCCESS
+
+            client.loop_stop()
+            client.disconnect()
+
+            if success:
+                logger.info(f"Published Philips Hue MQTT message to {broker}:{port} topic={topic} payload={payload}")
+                # Update simulated state so other parts of the app reflect change
+                self.current_state[room_id] = {
+                    'color': hex_color,
+                    'brightness': brightness,
+                    'updated': time.time()
+                }
+                return True
+
+            logger.error(f"MQTT publish failed for topic={topic} rc={getattr(info, 'rc', None)}")
+            return False
+
+        except Exception as e:
+            logger.error(f"Philips Hue MQTT error: {e}")
+            return False
     
     def _lifx_command(self, room_id: str, hex_color: str, brightness: float):
         """LIFX Cloud API integration"""
@@ -195,7 +267,7 @@ class IoTDeviceManager:
 
 
 # Singleton instance
-iot_manager = IoTDeviceManager()
+iot_manager = IoTDeviceManager(light_type='philips_hue')
 
 
 def apply_ai_settings_to_room(room_id: str, ai_output: Dict) -> bool:
