@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beat Suite AI - Environment Feedback</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/feedback_form.css') }}?v=1.0">
+</head>
+<body>
+    <div class="feedback-container">
+        <div class="feedback-header">
+            <h1>How are you feeling?</h1>
+            <p>Please rate the current environment settings</p>
+        </div>
+
+        <!-- Patient Selector -->
+        <div class="patient-selector" id="patientSelector">
+            <label for="patientSelect">Select Patient</label>
+            <select id="patientSelect">
+                <option value="">Loading patients...</option>
+            </select>
+        </div>
+
+        <!-- Smartwatch Data Summary -->
+        <div class="smartwatch-summary" id="smartwatchSummary">
+            <div class="summary-title">Current Status
+                <span class="loading-indicator" id="loadingIndicator" style="display: none;">
+                    <span class="spinner-dot"></span>
+                </span>
+            </div>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <span class="label">Heart Rate</span>
+                    <span class="value" id="hrValue">--</span>
+                    <span class="unit">BPM</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">O₂ Level</span>
+                    <span class="value" id="spo2Value">--</span>
+                    <span class="unit">%</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Activity</span>
+                    <span class="value" id="movementValue">--</span>
+                    <span class="unit">%</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Battery</span>
+                    <span class="value" id="batteryValue">--</span>
+                    <span class="unit">%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Analysis -->
+        <div class="ai-analysis" id="aiAnalysis">
+            <div class="analysis-title">Environment Analysis</div>
+            <p id="aiReasoning" class="reasoning">Loading analysis...</p>
+        </div>
+
+        <!-- Feedback Buttons -->
+        <div class="feedback-buttons">
+            <button class="btn btn-positive" id="goodBtn" data-feedback="positive">
+                <span class="emoji">😊</span>
+                <span class="text">Good</span>
+            </button>
+            <button class="btn btn-negative" id="badBtn" data-feedback="negative">
+                <span class="emoji">😕</span>
+                <span class="text">Not Good</span>
+            </button>
+        </div>
+
+        <!-- Summary textarea (optional) -->
+        <div class="feedback-summary">
+            <label for="summaryText">Additional Notes (optional)</label>
+            <textarea id="summaryText" placeholder="What would you like us to adjust? (e.g., too bright, too quiet, too warm)"></textarea>
+        </div>
+
+        <!-- Submit button -->
+        <div class="feedback-actions">
+            <button class="btn btn-submit" id="submitBtn">Submit Feedback</button>
+            <p id="feedbackStatus" class="feedback-status"></p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/auth.js') }}?v=1.0"></script>
+    <script src="{{ url_for('static', filename='js/api.js') }}?v=1.0"></script>
+    <script src="{{ url_for('static', filename='js/feedback_form.js') }}?v=1.0"></script>
+</body>
+</html>

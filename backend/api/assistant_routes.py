@@ -6,6 +6,7 @@ from flask import Blueprint, request, jsonify
 import logging
 from datetime import datetime
 from ..auth.decorators import login_required
+from ..services.memory_service import memory_service # Import memory service
 
 logger = logging.getLogger(__name__)
 
@@ -32,16 +33,17 @@ def handle_query():
         query = data.get('query')
         context = data.get('context', {})
         conversation_history = data.get('conversation_history', [])
+        user_id = request.headers.get('X-User-ID', 'default_user') # Get user_id from header, fallback to default
         
-        logger.info(f"🤖 Assistant query - Room: {room_id}, Query: '{query}', History: {len(conversation_history)} msgs")
+        logger.info(f"🤖 Assistant query - Room: {room_id}, Query: '{query}', History: {len(conversation_history)} msgs, User: {user_id}")
         
         if not room_id or not query:
             return jsonify({'error': 'Missing required fields'}), 400
         
         # Generate AI response with conversation context
-        response = generate_assistant_response(query, context, conversation_history)
+        response = generate_assistant_response(query, context, conversation_history, user_id)
         
-        logger.info(f"✅ Response generated - Room: {room_id}, Length: {len(response)} chars")
+        logger.info(f"✅ Response generated - Room: {room_id}, Length: {len(response)} chars, User: {user_id}")
         
         return jsonify({
             'response': response,
@@ -56,11 +58,28 @@ def handle_query():
 
 def generate_gemini_response(query: str, patient_name: str, room_number: str, vitals: dict, 
                              sleep_stage: str, pain_detected: bool, ai_active: bool, environment: dict, 
-                             conversation_history: list = None) -> str:
+                             conversation_history: list = None, user_id: str = "default_user") -> str:
     """Generate natural conversational response using Gemini AI with advanced medical reasoning and memory"""
     try:
         if conversation_history is None:
             conversation_history = []
+        
+        # --- NEW: Retrieve relevant memories ---
+        # Search for memories related to the current query and user
+        relevant_memories = memory_service.search_memory(user_id, query)
+        memory_context = ""
+        if relevant_memories:
+            memory_context = "\n\n💡 RELEVANT PAST MEMORIES:\n"
+            memory_context += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            for mem in relevant_memories:
+                content = mem.get('content', '')
+                feedback = mem.get('feedback', '')
+                if feedback:
+                    memory_context += f"- {content} (Feedback: {feedback})"
+                else:
+                    memory_context += f"- {content}"
+                memory_context += "\n"
+            memory_context += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
         
         # Format conversation history for context
         history_text = ""
@@ -135,6 +154,7 @@ Status: {'🟢 ACTIVE - AI is optimizing room environment based on patient needs
 • Audio: {music_desc} at {int(environment.get('music_volume', 0) * 100)}% volume
 • AI Reasoning: {environment.get('ai_reasoning', 'Maintaining optimal conditions')}
 
+{memory_context}
 {history_text}
 👤 CURRENT USER QUESTION:
 "{query}"
@@ -160,13 +180,17 @@ Status: {'🟢 ACTIVE - AI is optimizing room environment based on patient needs
 
 Generate your natural, conversational response:"""
 
-        response = gemini_service.model.generate_content(prompt)
-        answer = response.text.strip()
+        response_obj = gemini_service.model.generate_content(prompt)
+        answer = response_obj.text.strip()
         
         # Clean up markdown formatting
         answer = answer.replace('**', '').replace('*', '').replace('###', '').replace('##', '')
         
         logger.info(f"✅ Gemini AI response: {len(answer)} chars - Status: {overall_status}")
+
+        # --- NEW: Add interaction to memory ---
+        memory_service.add_memory(user_id, f"User asked: '{query}' - AI responded: '{answer}'")
+
         return answer
         
     except Exception as e:
@@ -174,7 +198,7 @@ Generate your natural, conversational response:"""
         return None
 
 
-def generate_assistant_response(query: str, context: dict, conversation_history: list = None) -> str:
+def generate_assistant_response(query: str, context: dict, conversation_history: list = None, user_id: str = "default_user") -> str: # Added user_id
     """Generate context-aware AI response using Gemini with conversation history or fallback patterns"""
     
     patient_name = context.get('patient_name', 'the patient')
@@ -191,7 +215,7 @@ def generate_assistant_response(query: str, context: dict, conversation_history:
     # Try using Gemini AI for natural conversation
     if AI_AVAILABLE and gemini_service:
         try:
-            ai_response = generate_gemini_response(query, patient_name, room_number, vitals, sleep_stage, pain_detected, ai_active, environment, conversation_history)
+            ai_response = generate_gemini_response(query, patient_name, room_number, vitals, sleep_stage, pain_detected, ai_active, environment, conversation_history, user_id) # Pass user_id
             if ai_response:
                 logger.info(f"✅ Using Gemini AI response (with {len(conversation_history)} history msgs)")
                 return ai_response

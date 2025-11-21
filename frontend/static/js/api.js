@@ -86,13 +86,19 @@ async function getCurrentUser() {
  * Generic GET request
  */
 async function get(endpoint) {
-    return fetch(endpoint, {
+    const response = await fetch(endpoint, {
         method: 'GET',
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         }
     });
+
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+    }
+
+    return response.json();
 }
 
 /**
@@ -142,7 +148,8 @@ window.api = {
     getRoomData,
     overrideAI,
     resumeAI,
-    getCurrentUser
+    getCurrentUser,
+    get
 };
 
 // Export CRUD utilities for admin panel

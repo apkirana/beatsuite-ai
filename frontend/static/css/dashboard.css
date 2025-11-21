@@ -1371,3 +1371,71 @@ body::before {
         max-height: 250px;
     }
 }
+
+/* Feedback Controls for Assistant Messages */
+.feedback-controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.feedback-btn {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(20px);
+    border: 0.5px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(31, 38, 135, 0.08);
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.feedback-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(31, 38, 135, 0.12);
+}
+
+.feedback-btn:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(31, 38, 135, 0.08);
+}
+
+.feedback-btn.feedback-positive:hover:not(:disabled) {
+    background: var(--success);
+    color: white;
+}
+
+.feedback-btn.feedback-negative:hover:not(:disabled) {
+    background: var(--danger);
+    color: white;
+}
+
+.feedback-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.feedback-submitted, .feedback-error {
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 500;
+    margin-left: 5px;
+}
+
+.feedback-submitted {
+    background: var(--success);
+    color: white;
+}
+
+.feedback-error {
+    background: var(--danger);
+    color: white;
+}

@@ -1,0 +1,208 @@
+{
+  "P001": [
+    {
+      "user_id": "P001",
+      "content": "Responds well to warm white light (3000K) during evening hours. Blue light (5000K) in morning helps with alertness and recovery.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T08:30:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P001",
+      "content": "Medium light intensity (40-60%) preferred during the day. Dimmer lighting (20-30%) at night reduces agitation and improves sleep quality.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T09:15:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P001",
+      "content": "Responds positively to calm instrumental music, particularly classical compositions. Music helps reduce anxiety during medical procedures.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T10:00:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P001",
+      "content": "Upbeat, energetic music in the morning (120-130 BPM) helps with motivation and engagement. Slower tempo (60-80 BPM) recommended in evenings.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T10:45:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P001",
+      "content": "High intensity bright lighting (>80%) causes visible distress and overstimulation. Patient becomes agitated and restless within 5-10 minutes.",
+      "feedback": "negative",
+      "timestamp": "2025-11-21T11:30:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P001",
+      "content": "Heavy metal and loud rock music (>100dB) triggers anxiety and aggressive behavior. Completely counterproductive during therapy sessions.",
+      "feedback": "negative",
+      "timestamp": "2025-11-21T12:00:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    }
+  ],
+  "P002": [
+    {
+      "user_id": "P002",
+      "content": "Prefers cooler color temperature (5500K) throughout the day. Finds warm lighting uncomfortable and associates it with fatigue.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T08:20:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P002",
+      "content": "High intensity lighting (70-80%) preferred during therapy sessions to maintain alertness. Regular intensity (50-60%) for general activities.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T09:00:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P002",
+      "content": "Traditional Spanish folk music has calming effect. Exposure to familiar music from home reduces stress levels significantly.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T11:30:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P002",
+      "content": "Rhythmic Latin music (90-110 BPM) improves mood and engagement during art therapy sessions. Maintains consistent tempo preference.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T12:00:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P002",
+      "content": "Warm color temperature (2700K) causes fatigue and drowsiness. Leads to reduced participation in therapy activities and poor engagement.",
+      "feedback": "negative",
+      "timestamp": "2025-11-21T13:15:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P002",
+      "content": "Slow, melancholic music (40-60 BPM) worsens mood and increases withdrawn behavior. Avoids classical and sad instrumental pieces.",
+      "feedback": "negative",
+      "timestamp": "2025-11-21T13:45:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    }
+  ],
+  "P003": [
+    {
+      "user_id": "P003",
+      "content": "Soft, gentle lighting with warm color (2700K) creates safe, comforting environment. Harsh or bright lights cause distress.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T07:45:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P003",
+      "content": "Low to medium light intensity (30-50%) optimal for comfort. Avoid bright lighting above 60% intensity due to visual sensitivity.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T08:15:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P003",
+      "content": "Gentle, soothing classical music or nature sounds (piano, strings) have relaxing effect. Audiobook storytelling also very effective.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T09:30:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P003",
+      "content": "Slow, peaceful tempo (50-70 BPM) preferred. Sound levels should be kept moderate (40-50dB) to prevent overstimulation.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T10:15:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P003",
+      "content": "Harsh blue light (6000K+) combined with high intensity creates panic-like response. Patient becomes inconsolable and withdrawn for extended periods.",
+      "feedback": "negative",
+      "timestamp": "2025-11-21T11:00:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P003",
+      "content": "Loud, energetic music (>60dB) or sudden loud noises cause severe distress and trigger crying episodes. Sound sensitivity is significant concern.",
+      "feedback": "negative",
+      "timestamp": "2025-11-21T11:45:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    }
+  ],
+  "P004": [
+    {
+      "user_id": "P004",
+      "content": "Neutral white light (4500K) works well for daytime activities. Supports natural circadian rhythm and maintains energy levels.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T07:00:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P004",
+      "content": "Bright lighting (65-80%) during activity and therapy sessions enhances focus. Moderate (45-55%) for rest periods between sessions.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T08:45:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P004",
+      "content": "Sports commentary and energetic pop/rock music (120-140 BPM) align with interests and boost mood. Motivates during recovery exercises.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T11:00:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P004",
+      "content": "Background ambient music during rest periods (70-90 BPM) helps with pain management. Avoids silence which can increase focus on discomfort.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T13:00:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P004",
+      "content": "Dim, low lighting (<40%) during daytime reduces motivation and increases fatigue. Patient shows poor participation in physical therapy when lighting is inadequate.",
+      "feedback": "negative",
+      "timestamp": "2025-11-21T14:00:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P004",
+      "content": "Quiet environments or silence increase focus on pain sensations. Leads to increased reports of discomfort and reduced engagement in recovery activities.",
+      "feedback": "negative",
+      "timestamp": "2025-11-21T14:30:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    }
+  ],
+  "P005": [
+    {
+      "user_id": "P005",
+      "content": "Bright, cool white light (5000-5500K) during morning and afternoon. Promotes alertness and supports healthy sleep-wake cycle.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T06:30:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P005",
+      "content": "High light intensity (75-85%) during education/learning activities. Reduces to 50-60% during meal times and social activities.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T07:30:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P005",
+      "content": "Upbeat children's songs and age-appropriate music (110-130 BPM) boost mood and engagement. Singing along helps with emotional expression.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T10:30:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    },
+    {
+      "user_id": "P005",
+      "content": "Variety in music selections prevents habituation. Rotates between pop, children's music, and instrumental pieces throughout the day.",
+      "feedback": "positive",
+      "timestamp": "2025-11-21T14:00:00.000000",
+      "event_type": "ENVIRONMENT_CONTROL"
+    }
+  ]
+}
