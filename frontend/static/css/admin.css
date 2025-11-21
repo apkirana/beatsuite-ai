@@ -555,3 +555,83 @@ body::before {
     from { transform: translateY(30px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
+
+/* Styles for Memory Admin Page */
+.user-memory-group {
+    margin-bottom: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+}
+
+.user-memory-group h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 10px;
+    letter-spacing: -0.02em;
+}
+
+.memory-records-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.memory-card {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 16px rgba(31, 38, 135, 0.08);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.memory-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(31, 38, 135, 0.12);
+}
+
+.memory-content {
+    font-size: 14px;
+    color: var(--dark);
+    line-height: 1.6;
+    margin-bottom: 12px;
+    word-break: break-word;
+}
+
+.memory-feedback {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 8px;
+    margin-top: auto;
+    text-align: center;
+    text-transform: capitalize;
+}
+
+.memory-feedback.positive {
+    background: var(--success);
+    color: white;
+}
+
+.memory-feedback.negative {
+    background: var(--danger);
+    color: white;
+}
+
+.memory-timestamp {
+    font-size: 11px;
+    color: #64748B;
+    margin-top: 12px;
+    text-align: right;
+}
+

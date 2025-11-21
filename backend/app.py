@@ -22,7 +22,8 @@ from backend.api.assistant_routes import assistant_bp
 from backend.api.report_analysis_routes import report_analysis_bp
 from backend.api.google_home_routes import google_home_bp
 from backend.api.test_routes import test_bp
-
+from backend.api.feedback_routes import feedback_bp # Import feedback blueprint
+from backend.api.memory_routes import memory_bp # Import memory blueprint
 # Import services
 from backend.core.smartwatch import smartwatch_manager
 
@@ -77,11 +78,15 @@ def create_app():
     # Integrations & Testing
     app.register_blueprint(google_home_bp)
     app.register_blueprint(test_bp)
+    app.register_blueprint(feedback_bp) # Register feedback blueprint
+    app.register_blueprint(memory_bp) # Register memory blueprint
     
     # Initialize AI system
     smartwatch_manager.register_device("P001", "simulated")
     smartwatch_manager.register_device("P002", "simulated")
     smartwatch_manager.register_device("P003", "simulated")
+    smartwatch_manager.register_device("P004", "simulated")
+    smartwatch_manager.register_device("P005", "simulated")
     logger.info("AI feedback loop initialized for all patients")
     
     # Web routes
@@ -109,7 +114,17 @@ def create_app():
     def iot_simulator():
         """Serve IoT device simulator page"""
         return render_template('iot_simulator.html')
-    
+
+    @app.route('/memory-admin')
+    def memory_admin():
+        """Serve memory admin page"""
+        return render_template('memory_admin.html')
+
+    @app.route('/feedback')
+    def feedback_page():
+        """Serve feedback form page"""
+        return render_template('feedback_form.html')
+
     # Error handlers
     @app.errorhandler(404)
     def not_found(error):

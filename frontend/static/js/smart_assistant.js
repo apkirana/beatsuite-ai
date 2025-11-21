@@ -413,9 +413,72 @@ class SmartAssistant {
         messageDiv.textContent = message;
         
         chatMessages.appendChild(messageDiv);
+
+        // Add feedback controls for assistant messages
+        if (role === 'assistant') {
+            const feedbackControls = document.createElement('div');
+            feedbackControls.className = 'feedback-controls';
+            
+            const thumbsUpBtn = document.createElement('button');
+            thumbsUpBtn.className = 'feedback-btn feedback-positive';
+            thumbsUpBtn.innerHTML = '👍';
+            thumbsUpBtn.onclick = () => this.sendFeedback(message, 'positive', feedbackControls);
+            
+            const thumbsDownBtn = document.createElement('button');
+            thumbsDownBtn.className = 'feedback-btn feedback-negative';
+            thumbsDownBtn.innerHTML = '👎';
+            thumbsDownBtn.onclick = () => this.sendFeedback(message, 'negative', feedbackControls);
+            
+            feedbackControls.appendChild(thumbsUpBtn);
+            feedbackControls.appendChild(thumbsDownBtn);
+            chatMessages.appendChild(feedbackControls);
+        }
+        
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
     
+    /**
+     * Send feedback to the backend
+     */
+    async sendFeedback(message, feedbackType, feedbackControlsElement) {
+        try {
+            // Disable buttons to prevent multiple submissions
+            const buttons = feedbackControlsElement.querySelectorAll('.feedback-btn');
+            buttons.forEach(btn => btn.disabled = true);
+
+            const response = await fetch('/api/feedback/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-User-ID': window.authUtils.getCurrentUserId() // Assuming user ID is available
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    interaction_summary: message,
+                    feedback: feedbackType
+                })
+            });
+
+            if (!response.ok) {
+                console.error('❌ Feedback API response not OK:', response.status, response.statusText);
+                throw new Error('Failed to submit feedback');
+            }
+
+            const data = await response.json();
+            console.log('✅ Feedback submitted:', data.message);
+
+            // Provide visual feedback
+            feedbackControlsElement.innerHTML = `<span class="feedback-submitted">Thank you for your feedback! (${feedbackType})</span>`;
+
+        } catch (error) {
+            console.error('❌ Error submitting feedback:', error);
+            feedbackControlsElement.innerHTML = `<span class="feedback-error">Error submitting feedback.</span>`;
+            // Re-enable buttons if submission failed
+            const buttons = feedbackControlsElement.querySelectorAll('.feedback-btn');
+            buttons.forEach(btn => btn.disabled = false);
+        }
+    }
+
     /**
      * Update UI elements
      */

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beat Suite AI - Memory Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=1.0">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='images/maxima-logo.svg') }}" alt="Prinses Máxima Centrum" class="logo-img">
+                <div class="brand-info">
+                    <h1>Beat Suite AI</h1>
+                    <span class="subtitle">Memory Administration</span>
+                </div>
+            </div>
+        </div>
+        <div class="header-right">
+            <button onclick="window.location.href='/dashboard'" class="admin-button">← Back to Dashboard</button>
+            <div class="user-info">
+                <span id="userName">Loading...</span>
+                <span id="userRole" class="role-badge"></span>
+            </div>
+            <button onclick="window.authUtils.logout()" class="logout-button">Logout</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="table-container">
+            <h2>Patient Memory Records</h2>
+            <p>This page displays all recorded memories and feedback for each patient, grouped by their user ID.</p>
+            
+            <div id="loadingIndicator" class="loading-indicator">
+                <div class="spinner"></div>
+                <p>Loading memory records...</p>
+            </div>
+
+            <div id="memoryData" style="display: none;">
+                <!-- Memory records will be dynamically inserted here -->
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/auth.js') }}?v=1.0"></script>
+    <script src="{{ url_for('static', filename='js/api.js') }}?v=1.0"></script>
+    <script src="{{ url_for('static', filename='js/memory_admin.js') }}?v=1.0"></script>
+</body>
+</html>
