@@ -3,6 +3,18 @@
     "room_id": "room_101",
     "patient_name": "Alex Thompson",
     "patient_id": "P001",
+    "age": 34,
+    "condition": "Post-surgical recovery",
+    "admission_reason": "Knee replacement surgery",
+    "allergies": "Penicillin, Latex",
+    "medications": [
+      "Acetaminophen 650mg",
+      "Ibuprofen 400mg",
+      "Physical therapy sessions"
+    ],
+    "last_checkup": "This morning at 8:30 AM",
+    "medical_history": "Previous sports injury, healthy otherwise",
+    "current_concerns": "Mild post-operative pain, mobility improvement",
     "ai_is_active": true,
     "ai_mode": "automatic",
     "last_updated": "2025-11-19T19:06:07.354132",
@@ -22,15 +34,78 @@
       "overridden_at": "2025-11-19T19:05:57.066694"
     },
     "patient_status": "stable",
+    "vitals": {
+      "heart_rate": 65,
+      "temperature": 98.2,
+      "spo2": 98,
+      "movement_level": "Low - recovering from surgery",
+      "pain_level": "3/10 - manageable",
+      "sleep_quality": "Light sleep - occasional discomfort"
+    },
     "heart_rate": 65,
     "oxygen_level": 98,
     "sleep_stage": "light_sleep",
-    "pain_detected": false
+    "pain_detected": false,
+    "conversation_history": [
+      {
+        "timestamp": "2025-11-21T14:03:17.004796",
+        "message": "Voice chat: 300-4300",
+        "response": "Hello Alex Thompson, I'm Dr. AI, ready to chat with you. I see you had some light sleep last night; how are you feeling this morning, especially with your knee replacement recovery and current pain level? Remember, for any critical decisions, always consult directly with your physicians."
+      },
+      {
+        "timestamp": "2025-11-21T14:03:23.955198",
+        "message": "Voice chat: Yes",
+        "response": "Thanks for confirming, Alex Thompson. Given your light sleep last night, how is your knee replacement recovery progressing and how would you describe your current pain level (3/10) this morning? Remember, while I'm here to support you, always consult directly with your physicians for critical medical decisions."
+      },
+      {
+        "timestamp": "2025-11-21T14:03:55.105157",
+        "message": "Voice chat: What is his temperature",
+        "response": "Hello Alex Thompson, your current temperature is 98.2\u00b0F, which is a good, stable reading for your post-surgical recovery. Given this, how are you feeling with your knee replacement and the pain level of 3/10 we discussed earlier? Please remember, for any critical medical decisions, always consult directly with your physicians."
+      },
+      {
+        "timestamp": "2025-11-21T14:04:23.332685",
+        "message": "Voice chat: He's so smart young",
+        "response": "Thank you, Alex Thompson! I'm glad I can be helpful during your recovery. Following up on our last conversation, how are you feeling with your knee replacement this morning, and has your pain level of 3/10 remained manageable? Please remember, for any critical medical decisions, always consult directly with your physicians."
+      },
+      {
+        "timestamp": "2025-11-21T14:05:29.265664",
+        "message": "Voice chat: SMS",
+        "response": "Hello Alex Thompson, I'm focused on supporting your recovery from knee replacement surgery. How are you feeling this morning, and has your pain level of 3/10 remained manageable? Please remember, for any critical medical decisions, always consult directly with your physicians."
+      },
+      {
+        "timestamp": "2025-11-21T14:05:37.748612",
+        "message": "Voice chat: 610",
+        "response": "Hello Alex Thompson, could you please clarify what you mean by '610'? I'm here to support your recovery from knee replacement surgery, so please let me know how you're feeling this morning and if your pain level of 3/10 is still manageable. Remember, for any critical medical decisions, always consult directly with your physicians."
+      },
+      {
+        "timestamp": "2025-11-21T14:06:07.208402",
+        "message": "Voice chat: I'm in",
+        "response": "Hello Alex Thompson, great to hear you're ready to connect! Following up on our last conversation, how are you feeling this morning with your knee replacement, and has your pain level of 3/10 remained manageable? Please remember, for any critical medical decisions, always consult directly with your physicians."
+      },
+      {
+        "timestamp": "2025-11-21T14:06:17.871941",
+        "message": "Voice chat: I am because the other number is at home",
+        "response": "Hello Alex Thompson, it sounds like you're reaching out through this channel. Regarding your knee replacement recovery, how are you feeling this morning, and has your pain level of 3/10 remained manageable? For any critical medical decisions, please always consult directly with your physicians."
+      }
+    ]
   },
   "room_102": {
     "room_id": "room_102",
     "patient_name": "Maria Garcia",
     "patient_id": "P002",
+    "age": 67,
+    "condition": "Diabetes management",
+    "admission_reason": "Blood sugar stabilization and monitoring",
+    "allergies": "Shellfish, Sulfa drugs",
+    "medications": [
+      "Metformin 1000mg",
+      "Insulin Humalog",
+      "Lisinopril 10mg",
+      "Aspirin 81mg"
+    ],
+    "last_checkup": "Yesterday evening at 6 PM",
+    "medical_history": "Type 2 diabetes for 12 years, hypertension",
+    "current_concerns": "Blood glucose fluctuations, dietary management",
     "ai_is_active": true,
     "ai_mode": "automatic",
     "last_updated": "2025-11-19T19:06:10.777714",
@@ -48,6 +123,14 @@
       "volume": 30.0
     },
     "patient_status": "stable",
+    "vitals": {
+      "heart_rate": 72,
+      "temperature": 98.6,
+      "spo2": 97,
+      "movement_level": "Moderate - up and walking",
+      "pain_level": "1/10 - minimal discomfort",
+      "sleep_quality": "Good - sleeping well"
+    },
     "heart_rate": 72,
     "oxygen_level": 97,
     "sleep_stage": "awake",
@@ -57,6 +140,18 @@
     "room_id": "room_103",
     "patient_name": "Sophie van Berg",
     "patient_id": "P003",
+    "age": 8,
+    "condition": "Pediatric asthma treatment",
+    "admission_reason": "Asthma exacerbation and breathing difficulty",
+    "allergies": "Peanuts, Tree nuts, Dust mites",
+    "medications": [
+      "Albuterol inhaler",
+      "Prednisolone 15mg",
+      "Montelukast 5mg"
+    ],
+    "last_checkup": "This afternoon at 2 PM",
+    "medical_history": "Diagnosed with asthma at age 5, seasonal allergies",
+    "current_concerns": "Breathing improvement, medication compliance",
     "ai_is_active": true,
     "ai_mode": "automatic",
     "last_updated": "2025-11-19T14:00:00",
@@ -75,6 +170,14 @@
       "temperature": 72
     },
     "patient_status": "stable",
+    "vitals": {
+      "heart_rate": 80,
+      "temperature": 98.1,
+      "spo2": 99,
+      "movement_level": "Active - playing and engaging",
+      "pain_level": "0/10 - no pain",
+      "sleep_quality": "Excellent - sleeping through the night"
+    },
     "heart_rate": 80,
     "oxygen_level": 99,
     "sleep_stage": "awake",
@@ -84,6 +187,18 @@
     "room_id": "room_104",
     "patient_name": "Liam Chen",
     "patient_id": "P004",
+    "age": 45,
+    "condition": "Cardiac monitoring",
+    "admission_reason": "Chest pain evaluation and heart rhythm monitoring",
+    "allergies": "None known",
+    "medications": [
+      "Atorvastatin 40mg",
+      "Metoprolol 50mg",
+      "Aspirin 325mg"
+    ],
+    "last_checkup": "This morning at 7 AM",
+    "medical_history": "Family history of heart disease, high cholesterol",
+    "current_concerns": "Heart rhythm stability, stress management",
     "ai_is_active": true,
     "ai_mode": "automatic",
     "last_updated": "2025-11-19T15:00:00",
@@ -102,6 +217,14 @@
       "temperature": 71
     },
     "patient_status": "stable",
+    "vitals": {
+      "heart_rate": 68,
+      "temperature": 98.4,
+      "spo2": 98,
+      "movement_level": "Limited - on bed rest",
+      "pain_level": "2/10 - mild chest discomfort",
+      "sleep_quality": "Fair - some anxiety affecting sleep"
+    },
     "heart_rate": 68,
     "oxygen_level": 98,
     "sleep_stage": "light_sleep",
@@ -111,6 +234,17 @@
     "room_id": "room_105",
     "patient_name": "Emma Johnson",
     "patient_id": "P005",
+    "age": 7,
+    "condition": "Appendectomy recovery",
+    "admission_reason": "Appendicitis surgery and post-operative care",
+    "allergies": "None known",
+    "medications": [
+      "Children's Tylenol",
+      "Amoxicillin suspension"
+    ],
+    "last_checkup": "This morning at 9 AM",
+    "medical_history": "Healthy child, no prior surgeries",
+    "current_concerns": "Surgical site healing, comfort during recovery",
     "ai_is_active": true,
     "ai_mode": "automatic",
     "last_updated": "2025-11-19T15:00:00",
@@ -129,6 +263,14 @@
       "temperature": 72
     },
     "patient_status": "stable",
+    "vitals": {
+      "heart_rate": 75,
+      "temperature": 99.1,
+      "spo2": 99,
+      "movement_level": "Moderate - slowly increasing activity",
+      "pain_level": "2/10 - mild surgical discomfort",
+      "sleep_quality": "Good - resting well"
+    },
     "heart_rate": 75,
     "oxygen_level": 99,
     "sleep_stage": "awake",
