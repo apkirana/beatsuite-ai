@@ -270,8 +270,22 @@ class IoTDeviceManager:
 iot_manager = IoTDeviceManager(light_type='philips_hue')
 
 
+def get_iot_device_manager() -> IoTDeviceManager:
+    """
+    Get the singleton IoTDeviceManager instance
+    """
+    return iot_manager
+
+
 def apply_ai_settings_to_room(room_id: str, ai_output: Dict) -> bool:
     """
     Public API to apply AI engine output to physical devices
     """
     return iot_manager.apply_environment_settings(room_id, ai_output)
+
+
+def get_room_device_state(room_id: str) -> Dict:
+    """
+    Get current state of all devices in a room
+    """
+    return iot_manager.get_current_state(room_id)
