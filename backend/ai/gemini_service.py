@@ -8,6 +8,8 @@ import os
 import logging
 from typing import Dict, List, Optional
 import json
+from datetime import datetime, time
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -21,16 +23,31 @@ class GeminiService:
         if not self.api_key:
             logger.warning("GOOGLE_API_KEY not found in environment variables")
             self.model = None
-            return
+        else:
+            try:
+                genai.configure(api_key=self.api_key)
+                # Use Gemini 2.5 Flash (stable, fast, free tier available)
+                self.model = genai.GenerativeModel('gemini-2.5-flash')
+                logger.info("Gemini AI service initialized successfully with gemini-2.5-flash")
+            except Exception as e:
+                logger.error(f"Failed to initialize Gemini AI: {e}")
+                self.model = None
         
+        # Load adaptive rules
+        self.adaptive_rules = self.load_adaptive_rules()
+    
+    def load_adaptive_rules(self):
+        """Load adaptive rules from configuration file"""
+        rules_path = os.path.join(os.path.dirname(__file__), '../config/adaptive_rules.json')
         try:
-            genai.configure(api_key=self.api_key)
-            # Use Gemini 2.5 Flash (stable, fast, free tier available)
-            self.model = genai.GenerativeModel('gemini-2.5-flash')
-            logger.info("Gemini AI service initialized successfully with gemini-2.5-flash")
+            with open(rules_path, 'r') as f:
+                return json.load(f)
+        except FileNotFoundError:
+            logger.warning("Adaptive rules file not found, using fallback rules")
+            return {"adaptive_rules": []}
         except Exception as e:
-            logger.error(f"Failed to initialize Gemini AI: {e}")
-            self.model = None
+            logger.error(f"Error loading adaptive rules: {e}")
+            return {"adaptive_rules": []}
     
     def is_available(self) -> bool:
         """Check if Gemini AI is available"""
@@ -229,6 +246,197 @@ Suggest optimal settings to promote healing and comfort. Return JSON:
         except Exception as e:
             logger.error(f"Error optimizing environment: {e}")
             return self._fallback_environment(patient_data)
+    
+    def optimize_environment_adaptive(self, patient_data: Dict, current_environment: Dict) -> Dict:
+        """
+        Enhanced environment optimization using adaptive rules
+        
+        Args:
+            patient_data: Current patient vitals and state
+            current_environment: Current room settings
+            
+        Returns:
+            Optimized environment recommendations using adaptive rules
+        """
+        try:
+            current_time = datetime.now().time()
+            
+            # First, check adaptive rules
+            matched_rule = self.evaluate_adaptive_rules(patient_data, current_time)
+            
+            if matched_rule:
+                logger.info(f"Adaptive rule matched: {matched_rule['scenario']} (Rule: {matched_rule['rule_id']})")
+                
+                # Parse response ranges (e.g., "15-25%" -> random value in range)
+                parsed_response = self._parse_response_ranges(matched_rule['response'])
+                
+                return {
+                    'success': True,
+                    'recommendations': parsed_response,
+                    'ai_provider': 'adaptive-rules',
+                    'rule_matched': matched_rule['scenario'],
+                    'rule_id': matched_rule['rule_id'],
+                    'reasoning': matched_rule['response'].get('reasoning', 'Adaptive rule applied')
+                }
+            
+            # Fall back to Gemini AI if no rules match
+            logger.info("No adaptive rules matched, falling back to Gemini AI")
+            return self.optimize_environment(patient_data, current_environment)
+            
+        except Exception as e:
+            logger.error(f"Error in adaptive optimization: {e}")
+            return self.optimize_environment(patient_data, current_environment)
+    
+    def evaluate_adaptive_rules(self, patient_data: Dict, current_time: time) -> Optional[Dict]:
+        """Evaluate adaptive rules and return matching rule"""
+        
+        # Sort rules by priority (lower number = higher priority)
+        sorted_rules = sorted(
+            self.adaptive_rules.get('adaptive_rules', []), 
+            key=lambda x: x.get('priority', 5)
+        )
+        
+        for rule in sorted_rules:
+            try:
+                if self.evaluate_condition(rule['condition'], patient_data, current_time):
+                    return {
+                        'scenario': rule['scenario'],
+                        'response': rule['ai_response'],
+                        'rule_id': rule.get('id', 'unknown'),
+                        'priority': rule.get('priority', 5)
+                    }
+            except Exception as e:
+                logger.warning(f"Error evaluating rule {rule.get('id', 'unknown')}: {e}")
+                continue
+        
+        return None
+    
+    def evaluate_condition(self, condition_string: str, data: Dict, current_time: time) -> bool:
+        """
+        Safely evaluate rule conditions
+        
+        Args:
+            condition_string: Rule condition (e.g., "heart_rate > 100 AND movement > 0.6")
+            data: Patient data dictionary
+            current_time: Current time for time-based conditions
+            
+        Returns:
+            Boolean indicating if condition is met
+        """
+        try:
+            # Extract values safely
+            heart_rate = float(data.get('heart_rate', 0))
+            movement = float(data.get('movement', 0))
+            spo2 = float(data.get('spo2', 100))
+            temperature = float(data.get('temperature', 98.6))
+            
+            # Handle special conditions first
+            if 'time BETWEEN' in condition_string:
+                return self.evaluate_time_condition(condition_string, current_time)
+            
+            if 'SPIKE DETECTED' in condition_string:
+                return self.detect_movement_spike(data)
+            
+            if 'BETWEEN' in condition_string and 'time' not in condition_string:
+                return self.evaluate_range_condition(condition_string, data)
+            
+            # Replace variables with values for basic conditions
+            condition = condition_string
+            condition = condition.replace('heart_rate', str(heart_rate))
+            condition = condition.replace('movement', str(movement))
+            condition = condition.replace('spo2', str(spo2))
+            condition = condition.replace('temperature', str(temperature))
+            condition = condition.replace('AND', ' and ')
+            condition = condition.replace('OR', ' or ')
+            
+            # Safely evaluate the condition
+            # Only allow safe operations
+            allowed_chars = set('0123456789.<>=! and or()')
+            if all(c in allowed_chars or c.isspace() for c in condition):
+                return eval(condition)
+            else:
+                logger.warning(f"Unsafe condition detected: {condition_string}")
+                return False
+                
+        except Exception as e:
+            logger.warning(f"Error evaluating condition '{condition_string}': {e}")
+            return False
+    
+    def evaluate_time_condition(self, condition: str, current_time: time) -> bool:
+        """Evaluate time-based conditions like 'time BETWEEN 22:00 AND 06:00'"""
+        try:
+            time_match = re.search(r'time BETWEEN (\d{2}:\d{2}) AND (\d{2}:\d{2})', condition)
+            if not time_match:
+                return False
+            
+            start_str, end_str = time_match.groups()
+            start_time = datetime.strptime(start_str, '%H:%M').time()
+            end_time = datetime.strptime(end_str, '%H:%M').time()
+            
+            # Handle overnight ranges (e.g., 22:00 to 06:00)
+            if start_time > end_time:
+                return current_time >= start_time or current_time <= end_time
+            else:
+                return start_time <= current_time <= end_time
+                
+        except Exception as e:
+            logger.warning(f"Error evaluating time condition: {e}")
+            return False
+    
+    def evaluate_range_condition(self, condition: str, data: Dict) -> bool:
+        """Evaluate range conditions like 'heart_rate BETWEEN 65 AND 85'"""
+        try:
+            # Match pattern: variable BETWEEN min AND max
+            range_match = re.search(r'(\w+) BETWEEN ([\d.]+) AND ([\d.]+)', condition)
+            if not range_match:
+                return False
+            
+            variable, min_val, max_val = range_match.groups()
+            value = float(data.get(variable, 0))
+            min_val = float(min_val)
+            max_val = float(max_val)
+            
+            return min_val <= value <= max_val
+            
+        except Exception as e:
+            logger.warning(f"Error evaluating range condition: {e}")
+            return False
+    
+    def detect_movement_spike(self, data: Dict) -> bool:
+        """Detect sudden movement spikes during sleep phases"""
+        try:
+            current_movement = float(data.get('movement', 0))
+            current_time = datetime.now().time()
+            
+            # Consider it a spike if high movement during typical sleep hours
+            sleep_hours = (time(22, 0) <= current_time or current_time <= time(6, 0))
+            
+            # Movement spike: high movement (>0.5) during sleep hours
+            return sleep_hours and current_movement > 0.5
+            
+        except Exception as e:
+            logger.warning(f"Error detecting movement spike: {e}")
+            return False
+    
+    def _parse_response_ranges(self, response: Dict) -> Dict:
+        """Parse response ranges like '15-25%' into actual values"""
+        parsed = response.copy()
+        
+        for key, value in response.items():
+            if isinstance(value, str) and '-' in value and '%' in value:
+                try:
+                    # Extract range like "15-25%"
+                    range_part = value.replace('%', '')
+                    if '-' in range_part:
+                        min_val, max_val = map(int, range_part.split('-'))
+                        # Use middle of range for consistency
+                        parsed[key] = (min_val + max_val) // 2
+                    else:
+                        parsed[key] = int(range_part)
+                except:
+                    pass  # Keep original value if parsing fails
+        
+        return parsed
     
     def chat_assistant(self, user_question: str, context: Dict) -> str:
         """

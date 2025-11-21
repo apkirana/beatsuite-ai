@@ -103,6 +103,61 @@ def optimize_environment(room_id):
         return jsonify({'error': 'Optimization failed'}), 500
 
 
+@ai_bp.route('/optimize-adaptive/<room_id>', methods=['POST'])
+@role_required(['admin', 'nurse'])
+def optimize_environment_adaptive(room_id):
+    """
+    Get AI recommendations using adaptive rules system
+    """
+    try:
+        rooms = load_room_data()
+        
+        if room_id not in rooms:
+            return jsonify({'error': 'Room not found'}), 404
+        
+        room_data = rooms[room_id]
+        current_env = room_data.get('current_ai_settings', {})
+        
+        # Use adaptive optimization
+        optimization = gemini_service.optimize_environment_adaptive(room_data, current_env)
+        
+        return jsonify({
+            'success': True,
+            'room_id': room_id,
+            'optimization': optimization,
+            'adaptive_rules': True
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in adaptive environment optimization: {e}")
+        return jsonify({'error': 'Adaptive optimization failed'}), 500
+
+
+@ai_bp.route('/rules/status', methods=['GET'])
+@login_required
+def adaptive_rules_status():
+    """
+    Get status of adaptive rules system
+    """
+    try:
+        rules_count = len(gemini_service.adaptive_rules.get('adaptive_rules', []))
+        
+        return jsonify({
+            'success': True,
+            'adaptive_rules_enabled': rules_count > 0,
+            'rules_count': rules_count,
+            'ai_available': gemini_service.is_available()
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting rules status: {e}")
+        return jsonify({'error': 'Status check failed'}), 500
+        
+    except Exception as e:
+        logger.error(f"Error in environment optimization: {e}")
+        return jsonify({'error': 'Optimization failed'}), 500
+
+
 @ai_bp.route('/chat', methods=['POST'])
 @login_required
 def chat_assistant():
@@ -174,15 +229,26 @@ def get_live_token():
         if not api_key:
             return jsonify({
                 'error': 'API key not configured',
-                'message': 'GOOGLE_API_KEY environment variable is not set'
+                'message': 'GOOGLE_API_KEY environment variable is not set. Please configure your API key.',
+                'help': 'Get your API key from https://makersuite.google.com/app/apikey'
             }), 503
+        
+        # Validate API key format (basic check)
+        if not api_key.startswith('AI') or len(api_key) < 20:
+            return jsonify({
+                'error': 'Invalid API key format',
+                'message': 'The API key appears to be invalid. Please check your GOOGLE_API_KEY.'
+            }), 503
+        
+        logger.info(f"Providing Gemini Live API token for room: {room_id}")
         
         # Return the API key for WebSocket connection
         # Note: In production, you might want to create session-specific tokens
         return jsonify({
             'success': True,
             'token': api_key,
-            'room_id': room_id
+            'room_id': room_id,
+            'endpoint': 'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent'
         })
         
     except Exception as e:
