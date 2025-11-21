@@ -1,0 +1,1436 @@
+{
+  "P001": {
+    "feedback_history": [
+      {
+        "feedback_id": "FB001_001",
+        "timestamp": "2025-11-19T18:00:00",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Played Disney Classics playlist",
+          "situation": "Patient awake during daytime"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": "Patient smiled and seemed happier",
+        "action_taken": "Continue recommending Disney music during daytime"
+      }
+    ],
+    "interaction_preferences": {
+      "music_preferences": {
+        "positive_interactions": [
+          "disney_classics",
+          "upbeat_music"
+        ],
+        "negative_interactions": [
+          "heavy_metal",
+          "sad_music"
+        ],
+        "neutral_interactions": []
+      },
+      "lighting_preferences": {
+        "positive_interactions": [
+          "warm_light",
+          "moderate_brightness"
+        ],
+        "negative_interactions": [
+          "bright_blue_light"
+        ],
+        "neutral_interactions": []
+      },
+      "timing_preferences": {
+        "best_times": [
+          "morning",
+          "afternoon"
+        ],
+        "worst_times": [
+          "late_night"
+        ]
+      }
+    },
+    "adaptation_settings": {
+      "learning_enabled": true,
+      "feedback_weight": 0.7,
+      "last_adapted": "2025-11-19T18:00:00"
+    }
+  },
+  "DEMO_P001": {
+    "feedback_history": [
+      {
+        "feedback_id": "FBDEMO_P001_1B6C20",
+        "timestamp": "2025-11-21T11:17:53.504707",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical: Beethoven Symphony No. 5",
+          "situation": "Evening pain management"
+        },
+        "rating": "negative",
+        "rating_score": 2,
+        "user_comment": "Too intense, increased pain"
+      },
+      {
+        "feedback_id": "FBDEMO_P001_CA3E66",
+        "timestamp": "2025-11-21T11:17:53.515611",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Jazz: Miles Davis Kind of Blue",
+          "situation": "Evening pain management"
+        },
+        "rating": "positive",
+        "rating_score": 4,
+        "user_comment": "Helped relax a bit"
+      },
+      {
+        "feedback_id": "FBDEMO_P001_19EB00",
+        "timestamp": "2025-11-21T11:17:53.516605",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Ambient: Brian Eno Music for Airports",
+          "situation": "Evening pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": "Perfect! Really calming"
+      },
+      {
+        "feedback_id": "FBDEMO_P001_2A6214",
+        "timestamp": "2025-11-21T11:22:26.049857",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical: Beethoven Symphony No. 5",
+          "situation": "Evening pain management"
+        },
+        "rating": "negative",
+        "rating_score": 2,
+        "user_comment": "Too intense, increased pain"
+      },
+      {
+        "feedback_id": "FBDEMO_P001_8FFCD1",
+        "timestamp": "2025-11-21T11:22:26.050801",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Jazz: Miles Davis Kind of Blue",
+          "situation": "Evening pain management"
+        },
+        "rating": "positive",
+        "rating_score": 4,
+        "user_comment": "Helped relax a bit"
+      },
+      {
+        "feedback_id": "FBDEMO_P001_1B1C6D",
+        "timestamp": "2025-11-21T11:22:26.051588",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Ambient: Brian Eno Music for Airports",
+          "situation": "Evening pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": "Perfect! Really calming"
+      },
+      {
+        "feedback_id": "FBDEMO_P001_9DA28D",
+        "timestamp": "2025-11-21T11:35:58.097938",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical: Beethoven Symphony No. 5",
+          "situation": "Evening pain management"
+        },
+        "rating": "negative",
+        "rating_score": 2,
+        "user_comment": "Too intense, increased pain"
+      },
+      {
+        "feedback_id": "FBDEMO_P001_1BFD4C",
+        "timestamp": "2025-11-21T11:35:58.099677",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Jazz: Miles Davis Kind of Blue",
+          "situation": "Evening pain management"
+        },
+        "rating": "positive",
+        "rating_score": 4,
+        "user_comment": "Helped relax a bit"
+      },
+      {
+        "feedback_id": "FBDEMO_P001_1BE1F9",
+        "timestamp": "2025-11-21T11:35:58.101173",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Ambient: Brian Eno Music for Airports",
+          "situation": "Evening pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": "Perfect! Really calming"
+      },
+      {
+        "feedback_id": "FBDEMO_P001_255FBC",
+        "timestamp": "2025-11-21T12:26:23.769836",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical: Beethoven Symphony No. 5",
+          "situation": "Evening pain management"
+        },
+        "rating": "negative",
+        "rating_score": 2,
+        "user_comment": "Too intense, increased pain"
+      },
+      {
+        "feedback_id": "FBDEMO_P001_B4BDBE",
+        "timestamp": "2025-11-21T12:26:23.776576",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Jazz: Miles Davis Kind of Blue",
+          "situation": "Evening pain management"
+        },
+        "rating": "positive",
+        "rating_score": 4,
+        "user_comment": "Helped relax a bit"
+      },
+      {
+        "feedback_id": "FBDEMO_P001_A12230",
+        "timestamp": "2025-11-21T12:26:23.780605",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Ambient: Brian Eno Music for Airports",
+          "situation": "Evening pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": "Perfect! Really calming"
+      }
+    ],
+    "interaction_preferences": {
+      "music_preferences": {
+        "positive_interactions": [
+          "Ambient: Brian Eno Music for Airports"
+        ],
+        "negative_interactions": [],
+        "neutral_interactions": []
+      },
+      "lighting_preferences": {
+        "positive_interactions": [],
+        "negative_interactions": [],
+        "neutral_interactions": []
+      },
+      "timing_preferences": {
+        "best_times": [],
+        "worst_times": []
+      }
+    },
+    "adaptation_settings": {
+      "learning_enabled": true,
+      "feedback_weight": 0.7,
+      "last_adapted": null
+    }
+  },
+  "DEMO_P002": {
+    "feedback_history": [
+      {
+        "feedback_id": "FBDEMO_P002_3B20C8",
+        "timestamp": "2025-11-21T11:22:26.052707",
+        "interaction_type": "temperature_control",
+        "interaction_context": {
+          "action": "22\u00b0C, 50% humidity, soft ventilation",
+          "situation": "Night"
+        },
+        "rating": "negative",
+        "rating_score": 2,
+        "user_comment": "Sleep quality: Poor"
+      },
+      {
+        "feedback_id": "FBDEMO_P002_CF174C",
+        "timestamp": "2025-11-21T11:22:26.053388",
+        "interaction_type": "temperature_control",
+        "interaction_context": {
+          "action": "20\u00b0C, 45% humidity, no air",
+          "situation": "Night"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": "Sleep quality: Excellent"
+      },
+      {
+        "feedback_id": "FBDEMO_P002_176EB6",
+        "timestamp": "2025-11-21T11:22:26.054086",
+        "interaction_type": "lighting_control",
+        "interaction_context": {
+          "action": "Bright white lights",
+          "situation": "Evening"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": "Sleep quality: Poor"
+      },
+      {
+        "feedback_id": "FBDEMO_P002_1BE5A1",
+        "timestamp": "2025-11-21T11:22:26.054920",
+        "interaction_type": "lighting_control",
+        "interaction_context": {
+          "action": "Warm dim lights (2700K)",
+          "situation": "Evening"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": "Sleep quality: Excellent"
+      },
+      {
+        "feedback_id": "FBDEMO_P002_8EA88B",
+        "timestamp": "2025-11-21T11:22:26.055754",
+        "interaction_type": "lighting_control",
+        "interaction_context": {
+          "action": "No lights (complete dark)",
+          "situation": "Night"
+        },
+        "rating": "positive",
+        "rating_score": 4,
+        "user_comment": "Sleep quality: Excellent"
+      },
+      {
+        "feedback_id": "FBDEMO_P002_E8F9C2",
+        "timestamp": "2025-11-21T11:35:58.104001",
+        "interaction_type": "temperature_control",
+        "interaction_context": {
+          "action": "22\u00b0C, 50% humidity, soft ventilation",
+          "situation": "Night"
+        },
+        "rating": "negative",
+        "rating_score": 2,
+        "user_comment": "Sleep quality: Poor"
+      },
+      {
+        "feedback_id": "FBDEMO_P002_C0F39E",
+        "timestamp": "2025-11-21T11:35:58.106022",
+        "interaction_type": "temperature_control",
+        "interaction_context": {
+          "action": "20\u00b0C, 45% humidity, no air",
+          "situation": "Night"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": "Sleep quality: Excellent"
+      },
+      {
+        "feedback_id": "FBDEMO_P002_CA58B5",
+        "timestamp": "2025-11-21T11:35:58.108239",
+        "interaction_type": "lighting_control",
+        "interaction_context": {
+          "action": "Bright white lights",
+          "situation": "Evening"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": "Sleep quality: Poor"
+      },
+      {
+        "feedback_id": "FBDEMO_P002_1510A9",
+        "timestamp": "2025-11-21T11:35:58.110651",
+        "interaction_type": "lighting_control",
+        "interaction_context": {
+          "action": "Warm dim lights (2700K)",
+          "situation": "Evening"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": "Sleep quality: Excellent"
+      },
+      {
+        "feedback_id": "FBDEMO_P002_F083F9",
+        "timestamp": "2025-11-21T11:35:58.112413",
+        "interaction_type": "lighting_control",
+        "interaction_context": {
+          "action": "No lights (complete dark)",
+          "situation": "Night"
+        },
+        "rating": "positive",
+        "rating_score": 4,
+        "user_comment": "Sleep quality: Excellent"
+      },
+      {
+        "feedback_id": "FBDEMO_P002_441BF6",
+        "timestamp": "2025-11-21T12:26:23.788646",
+        "interaction_type": "temperature_control",
+        "interaction_context": {
+          "action": "22\u00b0C, 50% humidity, soft ventilation",
+          "situation": "Night"
+        },
+        "rating": "negative",
+        "rating_score": 2,
+        "user_comment": "Sleep quality: Poor"
+      },
+      {
+        "feedback_id": "FBDEMO_P002_228BED",
+        "timestamp": "2025-11-21T12:26:23.793478",
+        "interaction_type": "temperature_control",
+        "interaction_context": {
+          "action": "20\u00b0C, 45% humidity, no air",
+          "situation": "Night"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": "Sleep quality: Excellent"
+      },
+      {
+        "feedback_id": "FBDEMO_P002_142675",
+        "timestamp": "2025-11-21T12:26:23.797426",
+        "interaction_type": "lighting_control",
+        "interaction_context": {
+          "action": "Bright white lights",
+          "situation": "Evening"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": "Sleep quality: Poor"
+      },
+      {
+        "feedback_id": "FBDEMO_P002_7E3F86",
+        "timestamp": "2025-11-21T12:26:23.802006",
+        "interaction_type": "lighting_control",
+        "interaction_context": {
+          "action": "Warm dim lights (2700K)",
+          "situation": "Evening"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": "Sleep quality: Excellent"
+      },
+      {
+        "feedback_id": "FBDEMO_P002_F1A992",
+        "timestamp": "2025-11-21T12:26:23.806014",
+        "interaction_type": "lighting_control",
+        "interaction_context": {
+          "action": "No lights (complete dark)",
+          "situation": "Night"
+        },
+        "rating": "positive",
+        "rating_score": 4,
+        "user_comment": "Sleep quality: Excellent"
+      }
+    ],
+    "interaction_preferences": {
+      "music_preferences": {
+        "positive_interactions": [],
+        "negative_interactions": [],
+        "neutral_interactions": []
+      },
+      "lighting_preferences": {
+        "positive_interactions": [
+          "Warm dim lights (2700K)",
+          "No lights (complete dark)"
+        ],
+        "negative_interactions": [
+          "Bright white lights"
+        ],
+        "neutral_interactions": []
+      },
+      "timing_preferences": {
+        "best_times": [],
+        "worst_times": []
+      }
+    },
+    "adaptation_settings": {
+      "learning_enabled": true,
+      "feedback_weight": 0.7,
+      "last_adapted": null
+    }
+  },
+  "DEMO_P003": {
+    "feedback_history": [
+      {
+        "feedback_id": "FBDEMO_P003_6D3D52",
+        "timestamp": "2025-11-21T11:22:26.057607",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Uplifting Pop",
+          "situation": "Morning (7:00)"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_0229F0",
+        "timestamp": "2025-11-21T11:22:26.059001",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Wake-up",
+          "situation": "Morning (8:00)"
+        },
+        "rating": "positive",
+        "rating_score": 4,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_159559",
+        "timestamp": "2025-11-21T11:22:26.060155",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Ambient/Calm",
+          "situation": "Morning (8:00)"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_9B76B4",
+        "timestamp": "2025-11-21T11:22:26.060994",
+        "interaction_type": "activity_suggestion",
+        "interaction_context": {
+          "action": "Light exercise",
+          "situation": "Afternoon (14:00)"
+        },
+        "rating": "positive",
+        "rating_score": 4,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_C8FC1B",
+        "timestamp": "2025-11-21T11:22:26.061892",
+        "interaction_type": "activity_suggestion",
+        "interaction_context": {
+          "action": "Rest/nap",
+          "situation": "Afternoon (14:00)"
+        },
+        "rating": "negative",
+        "rating_score": 2,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_4B0FA5",
+        "timestamp": "2025-11-21T11:22:26.062797",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Jazz",
+          "situation": "Evening (18:00)"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_8173A6",
+        "timestamp": "2025-11-21T11:22:26.063711",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Uplifting Pop",
+          "situation": "Evening (18:00)"
+        },
+        "rating": "negative",
+        "rating_score": 2,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_F65102",
+        "timestamp": "2025-11-21T11:22:26.064657",
+        "interaction_type": "activity_suggestion",
+        "interaction_context": {
+          "action": "Meditation",
+          "situation": "Night (21:00)"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_F983AA",
+        "timestamp": "2025-11-21T11:22:26.065586",
+        "interaction_type": "activity_suggestion",
+        "interaction_context": {
+          "action": "Light exercise",
+          "situation": "Night (21:00)"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_FE4D2F",
+        "timestamp": "2025-11-21T11:35:58.115718",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Uplifting Pop",
+          "situation": "Morning (7:00)"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_6406A3",
+        "timestamp": "2025-11-21T11:35:58.119242",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Wake-up",
+          "situation": "Morning (8:00)"
+        },
+        "rating": "positive",
+        "rating_score": 4,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_33378A",
+        "timestamp": "2025-11-21T11:35:58.124992",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Ambient/Calm",
+          "situation": "Morning (8:00)"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_7D1FA3",
+        "timestamp": "2025-11-21T11:35:58.128244",
+        "interaction_type": "activity_suggestion",
+        "interaction_context": {
+          "action": "Light exercise",
+          "situation": "Afternoon (14:00)"
+        },
+        "rating": "positive",
+        "rating_score": 4,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_1B42B9",
+        "timestamp": "2025-11-21T11:35:58.130996",
+        "interaction_type": "activity_suggestion",
+        "interaction_context": {
+          "action": "Rest/nap",
+          "situation": "Afternoon (14:00)"
+        },
+        "rating": "negative",
+        "rating_score": 2,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_7AC89B",
+        "timestamp": "2025-11-21T11:35:58.132701",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Jazz",
+          "situation": "Evening (18:00)"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_EBD65C",
+        "timestamp": "2025-11-21T11:35:58.134430",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Uplifting Pop",
+          "situation": "Evening (18:00)"
+        },
+        "rating": "negative",
+        "rating_score": 2,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_8688A0",
+        "timestamp": "2025-11-21T11:35:58.136978",
+        "interaction_type": "activity_suggestion",
+        "interaction_context": {
+          "action": "Meditation",
+          "situation": "Night (21:00)"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_8D1B67",
+        "timestamp": "2025-11-21T11:35:58.139667",
+        "interaction_type": "activity_suggestion",
+        "interaction_context": {
+          "action": "Light exercise",
+          "situation": "Night (21:00)"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_CC2275",
+        "timestamp": "2025-11-21T12:26:23.815250",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Uplifting Pop",
+          "situation": "Morning (7:00)"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_E399E9",
+        "timestamp": "2025-11-21T12:26:23.826181",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Wake-up",
+          "situation": "Morning (8:00)"
+        },
+        "rating": "positive",
+        "rating_score": 4,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_BC324D",
+        "timestamp": "2025-11-21T12:26:23.831957",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Ambient/Calm",
+          "situation": "Morning (8:00)"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_DB913C",
+        "timestamp": "2025-11-21T12:26:23.841369",
+        "interaction_type": "activity_suggestion",
+        "interaction_context": {
+          "action": "Light exercise",
+          "situation": "Afternoon (14:00)"
+        },
+        "rating": "positive",
+        "rating_score": 4,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_04C3C9",
+        "timestamp": "2025-11-21T12:26:23.853450",
+        "interaction_type": "activity_suggestion",
+        "interaction_context": {
+          "action": "Rest/nap",
+          "situation": "Afternoon (14:00)"
+        },
+        "rating": "negative",
+        "rating_score": 2,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_F13A41",
+        "timestamp": "2025-11-21T12:26:23.866397",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Jazz",
+          "situation": "Evening (18:00)"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_03E519",
+        "timestamp": "2025-11-21T12:26:23.876336",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Uplifting Pop",
+          "situation": "Evening (18:00)"
+        },
+        "rating": "negative",
+        "rating_score": 2,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_9DEA89",
+        "timestamp": "2025-11-21T12:26:23.889283",
+        "interaction_type": "activity_suggestion",
+        "interaction_context": {
+          "action": "Meditation",
+          "situation": "Night (21:00)"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P003_CE3271",
+        "timestamp": "2025-11-21T12:26:23.897631",
+        "interaction_type": "activity_suggestion",
+        "interaction_context": {
+          "action": "Light exercise",
+          "situation": "Night (21:00)"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      }
+    ],
+    "interaction_preferences": {
+      "music_preferences": {
+        "positive_interactions": [],
+        "negative_interactions": [],
+        "neutral_interactions": []
+      },
+      "lighting_preferences": {
+        "positive_interactions": [
+          "Light exercise"
+        ],
+        "negative_interactions": [
+          "Light exercise"
+        ],
+        "neutral_interactions": []
+      },
+      "timing_preferences": {
+        "best_times": [],
+        "worst_times": []
+      }
+    },
+    "adaptation_settings": {
+      "learning_enabled": true,
+      "feedback_weight": 0.7,
+      "last_adapted": null
+    }
+  },
+  "DEMO_P004": {
+    "feedback_history": [
+      {
+        "feedback_id": "FBDEMO_P004_7EB16F",
+        "timestamp": "2025-11-21T11:22:26.066914",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Music",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P004_7054B4",
+        "timestamp": "2025-11-21T11:22:26.068522",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical: Chopin Nocturnes",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P004_4CB715",
+        "timestamp": "2025-11-21T11:22:26.070018",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical: Debussy Clair de lune",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 4,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P004_64DEF1",
+        "timestamp": "2025-11-21T11:22:26.071469",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical: Satie Gymnop\u00e9dies",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P004_BBD528",
+        "timestamp": "2025-11-21T11:35:58.143402",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Music",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P004_350EEB",
+        "timestamp": "2025-11-21T11:35:58.146604",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical: Chopin Nocturnes",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P004_7826F6",
+        "timestamp": "2025-11-21T11:35:58.148589",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical: Debussy Clair de lune",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 4,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P004_8B5526",
+        "timestamp": "2025-11-21T11:35:58.151369",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical: Satie Gymnop\u00e9dies",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P004_361F0E",
+        "timestamp": "2025-11-21T12:26:23.906556",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Music",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P004_E0BB81",
+        "timestamp": "2025-11-21T12:26:23.915192",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical: Chopin Nocturnes",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P004_D9138B",
+        "timestamp": "2025-11-21T12:26:23.919164",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical: Debussy Clair de lune",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 4,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_P004_264AA5",
+        "timestamp": "2025-11-21T12:26:23.926070",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical: Satie Gymnop\u00e9dies",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      }
+    ],
+    "interaction_preferences": {
+      "music_preferences": {
+        "positive_interactions": [
+          "Classical Music"
+        ],
+        "negative_interactions": [],
+        "neutral_interactions": []
+      },
+      "lighting_preferences": {
+        "positive_interactions": [],
+        "negative_interactions": [],
+        "neutral_interactions": []
+      },
+      "timing_preferences": {
+        "best_times": [],
+        "worst_times": []
+      }
+    },
+    "adaptation_settings": {
+      "learning_enabled": true,
+      "feedback_weight": 0.7,
+      "last_adapted": null
+    }
+  },
+  "DEMO_PA": {
+    "feedback_history": [
+      {
+        "feedback_id": "FBDEMO_PA_0AE502",
+        "timestamp": "2025-11-21T11:22:26.073614",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Symphony",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PA_FB693D",
+        "timestamp": "2025-11-21T11:22:26.075223",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Symphony",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PA_CD383F",
+        "timestamp": "2025-11-21T11:22:26.076894",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Symphony",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PA_F01639",
+        "timestamp": "2025-11-21T11:22:26.078590",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Pop Music",
+          "situation": "Pain management"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PA_2C2E68",
+        "timestamp": "2025-11-21T11:22:26.080374",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Pop Music",
+          "situation": "Pain management"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PA_B8151A",
+        "timestamp": "2025-11-21T11:35:58.155410",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Symphony",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PA_53A3FB",
+        "timestamp": "2025-11-21T11:35:58.158189",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Symphony",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PA_7A81FB",
+        "timestamp": "2025-11-21T11:35:58.161068",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Symphony",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PA_A517FE",
+        "timestamp": "2025-11-21T11:35:58.164002",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Pop Music",
+          "situation": "Pain management"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PA_B3CEA1",
+        "timestamp": "2025-11-21T11:35:58.166983",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Pop Music",
+          "situation": "Pain management"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PA_78B2B7",
+        "timestamp": "2025-11-21T12:26:23.938356",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Symphony",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PA_EF1C08",
+        "timestamp": "2025-11-21T12:26:23.948661",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Symphony",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PA_A7F3AE",
+        "timestamp": "2025-11-21T12:26:23.957444",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Symphony",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PA_42A714",
+        "timestamp": "2025-11-21T12:26:23.965270",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Pop Music",
+          "situation": "Pain management"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PA_7D3A81",
+        "timestamp": "2025-11-21T12:26:23.978695",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Pop Music",
+          "situation": "Pain management"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      }
+    ],
+    "interaction_preferences": {
+      "music_preferences": {
+        "positive_interactions": [],
+        "negative_interactions": [
+          "Pop Music"
+        ],
+        "neutral_interactions": []
+      },
+      "lighting_preferences": {
+        "positive_interactions": [],
+        "negative_interactions": [],
+        "neutral_interactions": []
+      },
+      "timing_preferences": {
+        "best_times": [],
+        "worst_times": []
+      }
+    },
+    "adaptation_settings": {
+      "learning_enabled": true,
+      "feedback_weight": 0.7,
+      "last_adapted": null
+    }
+  },
+  "DEMO_PB": {
+    "feedback_history": [
+      {
+        "feedback_id": "FBDEMO_PB_8E4C87",
+        "timestamp": "2025-11-21T11:22:26.082435",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Pop Music",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PB_E70886",
+        "timestamp": "2025-11-21T11:22:26.084617",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Pop Music",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PB_774A17",
+        "timestamp": "2025-11-21T11:22:26.086610",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Pop Music",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PB_AAD2C7",
+        "timestamp": "2025-11-21T11:22:26.088584",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Symphony",
+          "situation": "Pain management"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PB_ED2E40",
+        "timestamp": "2025-11-21T11:22:26.090519",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Symphony",
+          "situation": "Pain management"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PB_A4CB78",
+        "timestamp": "2025-11-21T11:35:58.170357",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Pop Music",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PB_C6AF7E",
+        "timestamp": "2025-11-21T11:35:58.173360",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Pop Music",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PB_A5FA2D",
+        "timestamp": "2025-11-21T11:35:58.176192",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Pop Music",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PB_F86CEB",
+        "timestamp": "2025-11-21T11:35:58.180352",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Symphony",
+          "situation": "Pain management"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PB_1C7184",
+        "timestamp": "2025-11-21T11:35:58.189322",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Symphony",
+          "situation": "Pain management"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PB_423E87",
+        "timestamp": "2025-11-21T12:26:23.992490",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Pop Music",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PB_E8F5B5",
+        "timestamp": "2025-11-21T12:26:24.001561",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Pop Music",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PB_52E749",
+        "timestamp": "2025-11-21T12:26:24.009856",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Pop Music",
+          "situation": "Pain management"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PB_C85039",
+        "timestamp": "2025-11-21T12:26:24.014467",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Symphony",
+          "situation": "Pain management"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBDEMO_PB_960007",
+        "timestamp": "2025-11-21T12:26:24.019814",
+        "interaction_type": "music_suggestion",
+        "interaction_context": {
+          "action": "Classical Symphony",
+          "situation": "Pain management"
+        },
+        "rating": "negative",
+        "rating_score": 1,
+        "user_comment": ""
+      }
+    ],
+    "interaction_preferences": {
+      "music_preferences": {
+        "positive_interactions": [
+          "Pop Music"
+        ],
+        "negative_interactions": [],
+        "neutral_interactions": []
+      },
+      "lighting_preferences": {
+        "positive_interactions": [],
+        "negative_interactions": [],
+        "neutral_interactions": []
+      },
+      "timing_preferences": {
+        "best_times": [],
+        "worst_times": []
+      }
+    },
+    "adaptation_settings": {
+      "learning_enabled": true,
+      "feedback_weight": 0.7,
+      "last_adapted": null
+    }
+  },
+  "public_demo": {
+    "feedback_history": [
+      {
+        "feedback_id": "FBpublic_demo_3D5504",
+        "timestamp": "2025-11-21T12:27:40.244622",
+        "interaction_type": "patient_ui",
+        "interaction_context": {
+          "action": "listened_to_joke",
+          "situation": "waiting room"
+        },
+        "rating": "positive",
+        "rating_score": 5,
+        "user_comment": "Made me smile!"
+      },
+      {
+        "feedback_id": "FBpublic_demo_BADDB1",
+        "timestamp": "2025-11-21T12:38:40.864087",
+        "interaction_type": "patient_ui",
+        "interaction_context": {
+          "action": "feedback_submission",
+          "situation": ""
+        },
+        "rating": "positive",
+        "rating_score": 4,
+        "user_comment": ""
+      },
+      {
+        "feedback_id": "FBpublic_demo_5B0AC3",
+        "timestamp": "2025-11-21T12:38:51.435694",
+        "interaction_type": "patient_ui",
+        "interaction_context": {
+          "action": "feedback_submission",
+          "situation": ""
+        },
+        "rating": "negative",
+        "rating_score": 2,
+        "user_comment": ""
+      }
+    ],
+    "interaction_preferences": {
+      "music_preferences": {
+        "positive_interactions": [],
+        "negative_interactions": [],
+        "neutral_interactions": []
+      },
+      "lighting_preferences": {
+        "positive_interactions": [],
+        "negative_interactions": [],
+        "neutral_interactions": []
+      },
+      "timing_preferences": {
+        "best_times": [],
+        "worst_times": []
+      }
+    },
+    "adaptation_settings": {
+      "learning_enabled": true,
+      "feedback_weight": 0.7,
+      "last_adapted": null
+    }
+  }
+}

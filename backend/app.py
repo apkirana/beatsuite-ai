@@ -12,6 +12,9 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 # Import consolidated blueprints
 from backend.api.auth_routes import auth_bp
 from backend.api.user_routes import users_bp
@@ -22,6 +25,8 @@ from backend.api.assistant_routes import assistant_bp
 from backend.api.report_analysis_routes import report_analysis_bp
 from backend.api.google_home_routes import google_home_bp
 from backend.api.test_routes import test_bp
+from backend.api.feedback_routes import feedback_bp
+from backend.api.patient_routes import patient_bp
 
 # Import services
 from backend.core.smartwatch import smartwatch_manager
@@ -77,6 +82,11 @@ def create_app():
     # Integrations & Testing
     app.register_blueprint(google_home_bp)
     app.register_blueprint(test_bp)
+    
+    # Feedback & Memory System
+    app.register_blueprint(feedback_bp)
+    # Patient-facing demo pages (kid-friendly)
+    app.register_blueprint(patient_bp)
     
     # Initialize AI system
     smartwatch_manager.register_device("P001", "simulated")

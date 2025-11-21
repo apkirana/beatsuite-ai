@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Beat Suite AI - Patient</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/patient.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main class="patient-app">
+        <header class="patient-header">
+            <div class="patient-info">
+                <h1 id="patientName">Hello, Friend!</h1>
+                <div id="patientMeta">Age: <span id="age"></span> • Gender: <span id="gender"></span></div>
+            </div>
+            <div class="patient-hero">
+                <img src="{{ url_for('static', filename='images/kid_happy.svg') }}" alt="happy kid" id="heroImg">
+            </div>
+        </header>
+
+        <section class="profile-card">
+            <h2>About You</h2>
+            <div class="profile-fields">
+                <label>Age: <input id="inputAge" type="number" min="3" max="18" value="8"></label>
+                <label>Gender: 
+                    <select id="inputGender">
+                        <option value="female">Female</option>
+                        <option value="male">Male</option>
+                        <option value="nonbinary">Non-binary</option>
+                    </select>
+                </label>
+                <label>Favorite: 
+                    <input id="inputPrefs" placeholder="e.g. Music, Stories" />
+                </label>
+                <button id="saveProfile">Save Profile</button>
+            </div>
+        </section>
+
+        <section class="feedback-card">
+            <h2>Give Feedback</h2>
+            <div class="feedback-actions">
+                <div class="action-row">
+                    <button class="thumb" data-type="thumbs_up">👍</button>
+                    <button class="thumb" data-type="thumbs_down">👎</button>
+                    <button class="thumb" data-type="neutral">🙂</button>
+                </div>
+
+                <div class="rating-row">
+                    <label>Stars: <input id="rating" type="range" min="1" max="5" value="4"></label>
+                </div>
+
+                <div class="comment-row">
+                    <textarea id="comment" placeholder="Tell us what you liked (or didn't)" rows="3"></textarea>
+                </div>
+
+                <div class="submit-row">
+                    <button id="submitFeedback">Send Feedback</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="engage-card">
+            <h2>Need a smile?</h2>
+            <div class="engage-actions">
+                <button id="getJoke">Tell me a joke</button>
+                <button id="getPic">Show me a picture</button>
+                <div id="engageResult" class="engage-result" aria-live="polite"></div>
+            </div>
+        </section>
+
+        <footer class="patient-footer">This demo is kid-friendly — simple and cheerful.</footer>
+    </main>
+
+    <script>
+        const PATIENT_ID = '{{ patient_id }}';
+    </script>
+    <script src="{{ url_for('static', filename='js/patient.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+:root{
+  --bg:#f6fbff;
+  --card:#ffffff;
+  --accent:#4aa3ff;
+  --muted:#6b7280;
+  --radius:12px;
+  --gap:14px;
+}
+body{font-family:Inter, system-ui, Arial, sans-serif;background:var(--bg);margin:0;color:#0f172a}
+.patient-app{max-width:920px;margin:28px auto;padding:18px}
+.patient-header{display:flex;align-items:center;gap:18px}
+.patient-info h1{margin:0;font-size:28px;color:var(--accent)}
+.patient-meta{color:var(--muted)}
+.patient-hero img{width:96px;height:96px;border-radius:12px}
+.profile-card,.feedback-card,.engage-card{background:var(--card);padding:16px;border-radius:var(--radius);box-shadow:0 6px 18px rgba(12,38,63,0.06);margin-top:16px}
+.profile-fields{display:flex;gap:12px;align-items:center}
+.profile-fields label{display:flex;flex-direction:column;font-size:14px;color:var(--muted)}
+.profile-fields input[type=number],.profile-fields input,.profile-fields select{padding:8px;border-radius:8px;border:1px solid #e6eef8}
+.feedback-actions{display:flex;flex-direction:column;gap:12px}
+.action-row{display:flex;gap:8px}
+.thumb{font-size:22px;padding:10px;border-radius:10px;border:1px solid #e6eef8;background:#fff;cursor:pointer}
+.rating-row input{width:160px}
+.comment-row textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef8}
+.submit-row button{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:none;cursor:pointer}
+.engage-actions{display:flex;gap:8px;align-items:center}
+.engage-result{margin-left:8px;color:var(--muted)}
+.cheer-img{max-width:220px;border-radius:12px}
+.patient-footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
