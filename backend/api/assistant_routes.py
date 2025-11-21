@@ -50,6 +50,47 @@ def handle_query():
             'room_id': room_id,
             'timestamp': datetime.now().isoformat()
         }), 200
+
+    except Exception as e:
+        logger.error(f"❌ Error handling assistant query: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@assistant_bp.route('/chat', methods=['POST'])
+@login_required
+def handle_chat():
+    """Simple chat endpoint for quick voice assistant"""
+    try:
+        data = request.json
+        room_id = data.get('room_id')
+        message = data.get('message')
+        context = data.get('context', {})
+        
+        logger.info(f"💬 Quick chat - Room: {room_id}, Message: '{message}'")
+        
+        if not room_id or not message:
+            return jsonify({'error': 'Missing room_id or message'}), 400
+        
+        # Generate AI response
+        response = generate_assistant_response(message, context, [])
+        
+        logger.info(f"✅ Chat response generated - Room: {room_id}")
+        
+        return jsonify({
+            'success': True,
+            'response': response,
+            'message': response,  # For compatibility
+            'room_id': room_id,
+            'timestamp': datetime.now().isoformat()
+        }), 200
+
+    except Exception as e:
+        logger.error(f"❌ Error in chat endpoint: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'message': 'Sorry, I encountered an error processing your request.'
+        }), 500
         
     except Exception as e:
         logger.error(f"❌ Assistant query error: {e}", exc_info=True)

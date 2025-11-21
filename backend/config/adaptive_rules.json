@@ -1,0 +1,159 @@
+{
+  "adaptive_rules": [
+    {
+      "id": "pain_detection",
+      "condition": "heart_rate > 100 AND movement > 0.6",
+      "scenario": "possible_pain",
+      "priority": 2,
+      "ai_response": {
+        "light_brightness": "15-25%",
+        "light_color": "red",
+        "music_volume": "25-35%",
+        "music_type": "healing_frequencies",
+        "music_playlist": "432hz_healing",
+        "reasoning": "Elevated HR and movement detected; activating pain-reducing stimuli per clinical trial evidence"
+      }
+    },
+    {
+      "id": "deep_sleep_optimization",
+      "condition": "heart_rate < 65 AND movement < 0.2 AND time BETWEEN 22:00 AND 06:00",
+      "scenario": "deep_sleep",
+      "priority": 3,
+      "ai_response": {
+        "light_brightness": "0-10%",
+        "light_color": "warm",
+        "music_volume": "5-15%",
+        "music_type": "nature_sounds",
+        "music_playlist": "rain_sounds",
+        "reasoning": "Detected deep sleep pattern; maintaining sleep-supportive lighting and minimal acoustic environment"
+      }
+    },
+    {
+      "id": "circadian_morning_activation",
+      "condition": "time BETWEEN 06:00 AND 08:30 AND heart_rate BETWEEN 65 AND 85 AND movement > 0.4",
+      "scenario": "circadian_morning_activation",
+      "priority": 4,
+      "ai_response": {
+        "light_brightness": "60-80%",
+        "light_color": "cool",
+        "music_volume": "30-50%",
+        "music_type": "energizing",
+        "music_playlist": "morning_classical",
+        "reasoning": "Circadian phase cue; stimulating alertness per chronotherapy research"
+      }
+    },
+    {
+      "id": "respiratory_distress_emergency",
+      "condition": "spo2 < 92",
+      "scenario": "respiratory_distress",
+      "priority": 1,
+      "ai_response": {
+        "emergency_mode": true,
+        "light_brightness": "100%",
+        "light_color": "white",
+        "music_volume": "0%",
+        "notification": "critical_staff_alert",
+        "reasoning": "Critical oxygen saturation; alerting staff and silencing environment"
+      }
+    },
+    {
+      "id": "evening_settle_optimization",
+      "condition": "movement < 0.1 AND heart_rate BETWEEN 60 AND 75 AND time BETWEEN 20:00 AND 22:00",
+      "scenario": "evening_settle",
+      "priority": 4,
+      "ai_response": {
+        "light_brightness": "20-40%",
+        "light_color": "warm",
+        "music_volume": "15-25%",
+        "music_type": "relaxing",
+        "music_playlist": "calm_piano",
+        "reasoning": "Settling period detected; preparing environment for sleep onset"
+      }
+    },
+    {
+      "id": "sleep_disturbance_management",
+      "condition": "movement SPIKE DETECTED DURING sleep_phase",
+      "scenario": "sleep_disturbance",
+      "priority": 3,
+      "ai_response": {
+        "light_brightness": "5-15%",
+        "light_color": "warm",
+        "music_volume": "15-20%",
+        "music_type": "soothing",
+        "music_playlist": "gentle_lullaby",
+        "reasoning": "Disturbance detected during sleep; gentle modulation to resettle patient"
+      }
+    },
+    {
+      "id": "elevated_heart_rate",
+      "condition": "heart_rate > 90 AND heart_rate <= 100 AND movement < 0.4",
+      "scenario": "mild_stress",
+      "priority": 4,
+      "ai_response": {
+        "light_brightness": "30-50%",
+        "light_color": "warm",
+        "music_volume": "20-30%",
+        "music_type": "calming",
+        "music_playlist": "meditation_sounds",
+        "reasoning": "Elevated heart rate without significant movement; providing calming environment"
+      }
+    },
+    {
+      "id": "afternoon_rest",
+      "condition": "time BETWEEN 13:00 AND 16:00 AND movement < 0.3 AND heart_rate < 80",
+      "scenario": "afternoon_rest",
+      "priority": 5,
+      "ai_response": {
+        "light_brightness": "40-60%",
+        "light_color": "neutral",
+        "music_volume": "20-30%",
+        "music_type": "ambient",
+        "music_playlist": "soft_instrumental",
+        "reasoning": "Afternoon rest period; maintaining comfortable neutral environment"
+      }
+    },
+    {
+      "id": "fever_detection",
+      "condition": "temperature > 100.4",
+      "scenario": "fever_management",
+      "priority": 2,
+      "ai_response": {
+        "light_brightness": "30-40%",
+        "light_color": "cool",
+        "music_volume": "15-25%",
+        "music_type": "calming",
+        "music_playlist": "cooling_sounds",
+        "notification": "fever_alert",
+        "reasoning": "Fever detected; adjusting environment to support thermoregulation"
+      }
+    },
+    {
+      "id": "low_oxygen_warning",
+      "condition": "spo2 BETWEEN 92 AND 95",
+      "scenario": "oxygen_monitoring",
+      "priority": 2,
+      "ai_response": {
+        "light_brightness": "50-70%",
+        "light_color": "neutral",
+        "music_volume": "20-30%",
+        "music_type": "relaxing",
+        "music_playlist": "breathing_support",
+        "notification": "oxygen_alert",
+        "reasoning": "Oxygen saturation below optimal; monitoring closely with supportive environment"
+      }
+    }
+  ],
+  "rule_priorities": {
+    "1": "Emergency/Critical - Immediate medical attention",
+    "2": "High Priority - Medical intervention needed",
+    "3": "Medium Priority - Sleep/comfort optimization",
+    "4": "Normal Priority - Circadian/routine support", 
+    "5": "Low Priority - General comfort"
+  },
+  "evaluation_settings": {
+    "check_interval_seconds": 30,
+    "rule_timeout_minutes": 5,
+    "emergency_override": true,
+    "logging_enabled": true
+  }
+}

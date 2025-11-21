@@ -8,6 +8,9 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 import logging
 
+# Import Gemini service for adaptive rules
+from backend.ai.gemini_service import GeminiService
+
 logger = logging.getLogger(__name__)
 
 
@@ -222,11 +225,21 @@ class BeatSuiteAI:
         self.env_controller = EnvironmentController()
         self.patient_histories = {}  # Store HR history per patient
         
-        logger.info("Beat Suite AI Engine initialized")
+        # Initialize Gemini service for adaptive rules
+        try:
+            self.gemini_service = GeminiService()
+            self.adaptive_rules_enabled = True
+            logger.info("Beat Suite AI Engine initialized with adaptive rules support")
+        except Exception as e:
+            logger.warning(f"Could not initialize Gemini service: {e}")
+            self.gemini_service = None
+            self.adaptive_rules_enabled = False
+            logger.info("Beat Suite AI Engine initialized with fallback mode")
     
     def process_smartwatch_data(self, patient_id: str, smartwatch_data: Dict) -> Dict:
         """
         Main processing loop: analyze patient data and generate environment settings
+        Now uses adaptive rules for intelligent decision making
         
         Args:
             patient_id: Unique patient identifier
@@ -265,7 +278,7 @@ class BeatSuiteAI:
             history['heart_rates'] = history['heart_rates'][-20:]
         history['last_update'] = timestamp
         
-        # Analyze patient state
+        # Analyze patient state using existing processors
         hour = timestamp.hour
         sleep_stage = self.data_processor.analyze_sleep_stage(hr, movement, hour)
         pain_detected, pain_severity = self.data_processor.detect_pain_indicators(
@@ -273,19 +286,53 @@ class BeatSuiteAI:
         )
         circadian_phase = self.data_processor.assess_circadian_phase(hour)
         
-        # Calculate optimal environment
-        light_settings = self.env_controller.calculate_light_settings(
-            sleep_stage, circadian_phase, pain_detected, pain_severity
-        )
-        music_settings = self.env_controller.calculate_music_settings(
-            sleep_stage, pain_detected, pain_severity, circadian_phase
-        )
-        
-        # Generate AI reasoning
-        reasoning = self._generate_reasoning(
-            sleep_stage, circadian_phase, pain_detected, 
-            pain_severity, hr, movement, spo2
-        )
+        # 🚀 NEW: Use adaptive rules for environment optimization
+        if self.adaptive_rules_enabled and self.gemini_service:
+            # Prepare patient data for adaptive rules
+            patient_data = {
+                'heart_rate': hr,
+                'movement': movement,
+                'spo2': spo2,
+                'temperature': smartwatch_data.get('temperature', 98.6),
+                'sleep_stage': sleep_stage,
+                'pain_detected': pain_detected
+            }
+            
+            # Get current environment (empty for first time)
+            current_environment = {}
+            
+            # Run adaptive rules optimization
+            optimization_result = self.gemini_service.optimize_environment_adaptive(
+                patient_data, current_environment
+            )
+            
+            if optimization_result.get('success'):
+                recommendations = optimization_result.get('recommendations', {})
+                
+                # Convert adaptive rules recommendations to our format
+                light_settings, music_settings = self._convert_adaptive_recommendations(recommendations)
+                
+                # Use adaptive rules reasoning
+                reasoning = optimization_result.get('reasoning', 'Adaptive AI optimization applied')
+                
+                # Add rule information
+                if optimization_result.get('rule_matched'):
+                    reasoning += f" (Rule: {optimization_result.get('rule_matched')})"
+                
+                logger.info(f"✅ Adaptive rules applied for {patient_id}: {optimization_result.get('rule_matched', 'unknown')}")
+                
+            else:
+                # Fallback to traditional algorithm
+                logger.info(f"⚠️ Adaptive rules failed for {patient_id}, using fallback")
+                light_settings, music_settings, reasoning = self._fallback_environment_calculation(
+                    sleep_stage, circadian_phase, pain_detected, pain_severity, hr, movement, spo2
+                )
+        else:
+            # Use traditional algorithm if adaptive rules not available
+            logger.debug(f"Using traditional AI engine for {patient_id}")
+            light_settings, music_settings, reasoning = self._fallback_environment_calculation(
+                sleep_stage, circadian_phase, pain_detected, pain_severity, hr, movement, spo2
+            )
         
         return {
             'light': light_settings,
@@ -302,6 +349,72 @@ class BeatSuiteAI:
             'ai_reasoning': reasoning,
             'timestamp': timestamp.isoformat()
         }
+    
+    def _convert_adaptive_recommendations(self, recommendations: Dict) -> Tuple[Dict, Dict]:
+        """
+        Convert adaptive rules recommendations to our light/music format
+        """
+        # Light settings
+        light_brightness = recommendations.get('light_brightness', 50)
+        if isinstance(light_brightness, str) and '%' in light_brightness:
+            light_brightness = int(light_brightness.replace('%', ''))
+        
+        light_color = recommendations.get('light_color', 'neutral')
+        light_hex = recommendations.get('light_hex_color')
+        
+        # Map color to hex if not provided
+        if not light_hex:
+            color_map = {
+                'warm': '#FFE4B5',
+                'cool': '#CCE6FF', 
+                'red': '#FF6B35',
+                'neutral': '#FFFFFF'
+            }
+            light_hex = color_map.get(light_color, '#FFFFFF')
+        
+        light_settings = {
+            'color_hex': light_hex,
+            'brightness': light_brightness / 100.0,  # Convert to 0-1 range
+            'color_temp': 4000  # Default color temperature
+        }
+        
+        # Music settings
+        music_volume = recommendations.get('music_volume', 30)
+        if isinstance(music_volume, str) and '%' in music_volume:
+            music_volume = int(music_volume.replace('%', ''))
+        
+        music_type = recommendations.get('music_type', 'ambient')
+        music_playlist = recommendations.get('music_playlist', 'calm_ambient')
+        
+        music_settings = {
+            'volume': music_volume / 100.0,  # Convert to 0-1 range
+            'playlist_id': music_playlist,
+            'type': music_type
+        }
+        
+        return light_settings, music_settings
+    
+    def _fallback_environment_calculation(self, sleep_stage: str, circadian_phase: str,
+                                        pain_detected: bool, pain_severity: float,
+                                        hr: int, movement: float, spo2: int) -> Tuple[Dict, Dict, str]:
+        """
+        Traditional environment calculation as fallback
+        """
+        # Use the original environment controller
+        light_settings = self.env_controller.calculate_light_settings(
+            sleep_stage, circadian_phase, pain_detected, pain_severity
+        )
+        music_settings = self.env_controller.calculate_music_settings(
+            sleep_stage, pain_detected, pain_severity, circadian_phase
+        )
+        
+        # Generate reasoning
+        reasoning = self._generate_reasoning(
+            sleep_stage, circadian_phase, pain_detected, 
+            pain_severity, hr, movement, spo2
+        )
+        
+        return light_settings, music_settings, reasoning
     
     def _generate_reasoning(self, sleep_stage: str, circadian_phase: str,
                            pain_detected: bool, pain_severity: float,

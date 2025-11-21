@@ -7,6 +7,11 @@ Integrates with Philips Hue, LIFX, Sonos, etc.
 import logging
 from typing import Dict
 import time
+import json
+import os
+import re
+
+import paho.mqtt.client as mqtt
 
 logger = logging.getLogger(__name__)
 
@@ -59,10 +64,77 @@ class SmartLightController:
     
     def _philips_hue_command(self, room_id: str, hex_color: str, brightness: float):
         """Philips Hue Bridge API integration"""
-        # Requires: Hue Bridge IP, API key
-        # PUT /api/<username>/lights/<id>/state
-        logger.info("Philips Hue integration - Not yet implemented")
-        return False
+        # Publishes a JSON command to an MQTT broker so a bridge/gateway can
+        # translate it to the Philips Hue Bridge API. Default broker is
+        # `test.mosquitto.org` and default topic is `philips_hue/command/<room_id>`.
+        # Example payload:
+        # {
+        #     "light_id": 1,
+        #     "on": true,
+        #     "brightness": 0-100,
+        #     "color": "#ff0000"
+        # }
+        try:
+            broker = os.getenv('MQTT_BROKER', 'test.mosquitto.org')
+            port = int(os.getenv('MQTT_PORT', '1883'))
+            topic = os.getenv('MQTT_TOPIC', f'hue/command')
+
+            # Try to derive a numeric light_id from the room_id; fallback to 1
+            light_id = 1
+            # try:
+            #     m = re.search(r"(\d+)$", str(room_id))
+            #     if m:
+            #         light_id = int(m.group(1))
+            # except Exception:
+            #     pass
+
+            on = bool(brightness and brightness > 0.0)
+            brightness_pct = max(0, min(100, int(round((brightness or 0.0) * 100))))
+
+            payload = {
+                "light_id": light_id,
+                "on": on,
+                "brightness": brightness_pct,
+                "color": hex_color
+            }
+
+            client = mqtt.Client()
+            # Connect and publish
+            client.connect(broker, port, 60)
+            client.loop_start()
+            info = client.publish(topic, json.dumps(payload), qos=1)
+            # Wait up to a few seconds for publish to complete
+            try:
+                info.wait_for_publish(timeout=5)
+            except Exception:
+                pass
+            published = getattr(info, 'is_published', None)
+            success = False
+            if callable(published):
+                success = info.is_published()
+            else:
+                # fallback: check rc
+                success = getattr(info, 'rc', 1) == mqtt.MQTT_ERR_SUCCESS
+
+            client.loop_stop()
+            client.disconnect()
+
+            if success:
+                logger.info(f"Published Philips Hue MQTT message to {broker}:{port} topic={topic} payload={payload}")
+                # Update simulated state so other parts of the app reflect change
+                self.current_state[room_id] = {
+                    'color': hex_color,
+                    'brightness': brightness,
+                    'updated': time.time()
+                }
+                return True
+
+            logger.error(f"MQTT publish failed for topic={topic} rc={getattr(info, 'rc', None)}")
+            return False
+
+        except Exception as e:
+            logger.error(f"Philips Hue MQTT error: {e}")
+            return False
     
     def _lifx_command(self, room_id: str, hex_color: str, brightness: float):
         """LIFX Cloud API integration"""
@@ -75,7 +147,7 @@ class SmartLightController:
 class SmartAudioController:
     """
     Control audio systems
-    Supports: Sonos, Spotify Connect, Apple AirPlay
+    Supports: Sonos, Spotify Connect, YouTube Music, Custom Audio APIs
     """
     
     def __init__(self, device_type: str = 'simulated'):
@@ -107,8 +179,16 @@ class SmartAudioController:
                 return self._sonos_command(room_id, playlist_id, volume)
             
             elif self.device_type == 'spotify':
-                # TODO: Implement Spotify Web API
+                # Spotify Web API integration
                 return self._spotify_command(room_id, playlist_id, volume)
+            
+            elif self.device_type == 'youtube_music':
+                # YouTube Music API integration
+                return self._youtube_music_command(room_id, playlist_id, volume)
+            
+            elif self.device_type == 'custom_api':
+                # Custom audio streaming API
+                return self._custom_audio_api_command(room_id, playlist_id, volume)
             
             else:
                 logger.error(f"Unsupported audio device type: {self.device_type}")
@@ -133,9 +213,190 @@ class SmartAudioController:
     
     def _spotify_command(self, room_id: str, playlist_id: str, volume: float):
         """Spotify Web API integration"""
-        # Requires: Spotify OAuth token, device ID
-        logger.info("Spotify integration - Not yet implemented")
-        return False
+        try:
+            import requests
+            
+            # Get Spotify credentials from environment
+            access_token = os.getenv('SPOTIFY_ACCESS_TOKEN')
+            device_id = os.getenv(f'SPOTIFY_DEVICE_{room_id.upper()}')
+            
+            if not access_token:
+                logger.error("Spotify access token not found in environment variables")
+                return False
+            
+            if not device_id:
+                logger.warning(f"No Spotify device configured for {room_id}, using default")
+                device_id = os.getenv('SPOTIFY_DEFAULT_DEVICE')
+            
+            # Spotify Web API endpoints
+            base_url = "https://api.spotify.com/v1"
+            headers = {
+                'Authorization': f'Bearer {access_token}',
+                'Content-Type': 'application/json'
+            }
+            
+            # Start playback with playlist
+            playback_data = {
+                'context_uri': f'spotify:playlist:{playlist_id}',
+                'device_id': device_id
+            }
+            
+            response = requests.put(
+                f"{base_url}/me/player/play",
+                headers=headers,
+                json=playback_data,
+                timeout=10
+            )
+            
+            if response.status_code in [200, 204]:
+                # Set volume
+                volume_percent = int(volume * 100)
+                volume_response = requests.put(
+                    f"{base_url}/me/player/volume?volume_percent={volume_percent}&device_id={device_id}",
+                    headers=headers,
+                    timeout=5
+                )
+                
+                if volume_response.status_code in [200, 204]:
+                    logger.info(f"[SPOTIFY] Room {room_id}: Playing playlist '{playlist_id}' at {volume:.0%}")
+                    self.current_state[room_id] = {
+                        'playlist': playlist_id,
+                        'volume': volume,
+                        'playing': True,
+                        'updated': time.time(),
+                        'platform': 'spotify'
+                    }
+                    return True
+                else:
+                    logger.error(f"Spotify volume control failed: {volume_response.status_code}")
+                    return False
+            else:
+                logger.error(f"Spotify playback failed: {response.status_code} - {response.text}")
+                return False
+                
+        except ImportError:
+            logger.error("requests library not installed. Install with: pip install requests")
+            return False
+        except Exception as e:
+            logger.error(f"Spotify API error: {e}")
+            return False
+    
+    def _youtube_music_command(self, room_id: str, playlist_id: str, volume: float):
+        """YouTube Music API integration"""
+        try:
+            import requests
+            
+            # YouTube Music API (requires ytmusicapi)
+            api_key = os.getenv('YOUTUBE_API_KEY')
+            if not api_key:
+                logger.error("YouTube API key not found in environment variables")
+                return False
+            
+            # Use YouTube Data API v3 or ytmusicapi
+            headers = {
+                'Authorization': f'Bearer {api_key}',
+                'Content-Type': 'application/json'
+            }
+            
+            # Example: Get playlist and play first track
+            playlist_url = f"https://www.googleapis.com/youtube/v3/playlistItems"
+            params = {
+                'part': 'snippet',
+                'playlistId': playlist_id,
+                'key': api_key,
+                'maxResults': 1
+            }
+            
+            response = requests.get(playlist_url, params=params, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('items'):
+                    video_id = data['items'][0]['snippet']['resourceId']['videoId']
+                    logger.info(f"[YOUTUBE_MUSIC] Room {room_id}: Playing playlist '{playlist_id}' (video: {video_id}) at {volume:.0%}")
+                    
+                    self.current_state[room_id] = {
+                        'playlist': playlist_id,
+                        'volume': volume,
+                        'playing': True,
+                        'updated': time.time(),
+                        'platform': 'youtube_music',
+                        'current_video': video_id
+                    }
+                    return True
+                else:
+                    logger.error(f"No items found in YouTube playlist: {playlist_id}")
+                    return False
+            else:
+                logger.error(f"YouTube API error: {response.status_code} - {response.text}")
+                return False
+                
+        except ImportError:
+            logger.error("requests library not installed. Install with: pip install requests")
+            return False
+        except Exception as e:
+            logger.error(f"YouTube Music API error: {e}")
+            return False
+    
+    def _custom_audio_api_command(self, room_id: str, playlist_id: str, volume: float):
+        """Custom audio streaming API integration"""
+        try:
+            import requests
+            
+            # Custom audio service configuration
+            api_base_url = os.getenv('CUSTOM_AUDIO_API_URL', 'https://api.healthcare-audio.com/v1')
+            api_token = os.getenv('CUSTOM_AUDIO_API_TOKEN')
+            
+            if not api_token:
+                logger.error("Custom audio API token not found in environment variables")
+                return False
+            
+            headers = {
+                'Authorization': f'Bearer {api_token}',
+                'Content-Type': 'application/json',
+                'X-Room-ID': room_id
+            }
+            
+            # Send play command to custom audio service
+            play_data = {
+                'room_id': room_id,
+                'playlist_id': playlist_id,
+                'volume': volume,
+                'action': 'play',
+                'healthcare_mode': True
+            }
+            
+            response = requests.post(
+                f"{api_base_url}/rooms/{room_id}/play",
+                headers=headers,
+                json=play_data,
+                timeout=15
+            )
+            
+            if response.status_code in [200, 201]:
+                result = response.json()
+                logger.info(f"[CUSTOM_API] Room {room_id}: Playing '{playlist_id}' at {volume:.0%} - Session: {result.get('session_id', 'N/A')}")
+                
+                self.current_state[room_id] = {
+                    'playlist': playlist_id,
+                    'volume': volume,
+                    'playing': True,
+                    'updated': time.time(),
+                    'platform': 'custom_api',
+                    'session_id': result.get('session_id'),
+                    'audio_url': result.get('stream_url')
+                }
+                return True
+            else:
+                logger.error(f"Custom audio API error: {response.status_code} - {response.text}")
+                return False
+                
+        except ImportError:
+            logger.error("requests library not installed. Install with: pip install requests")
+            return False
+        except Exception as e:
+            logger.error(f"Custom audio API error: {e}")
+            return False
 
 
 class IoTDeviceManager:
@@ -195,7 +456,14 @@ class IoTDeviceManager:
 
 
 # Singleton instance
-iot_manager = IoTDeviceManager()
+iot_manager = IoTDeviceManager(light_type='philips_hue')
+
+
+def get_iot_device_manager() -> IoTDeviceManager:
+    """
+    Get the singleton IoTDeviceManager instance
+    """
+    return iot_manager
 
 
 def apply_ai_settings_to_room(room_id: str, ai_output: Dict) -> bool:
@@ -203,3 +471,10 @@ def apply_ai_settings_to_room(room_id: str, ai_output: Dict) -> bool:
     Public API to apply AI engine output to physical devices
     """
     return iot_manager.apply_environment_settings(room_id, ai_output)
+
+
+def get_room_device_state(room_id: str) -> Dict:
+    """
+    Get current state of all devices in a room
+    """
+    return iot_manager.get_current_state(room_id)

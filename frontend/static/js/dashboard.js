@@ -229,6 +229,17 @@ function displayRooms() {
                             MANUAL
                         `}
                     </div>
+                    ${room.ai_control_active && room.ai_insights?.adaptive_rules_active !== false ? `
+                        <div class="adaptive-rules-badge" style="background: linear-gradient(135deg, #8b5cf6, #a855f7); color: white; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; display: flex; align-items: center; gap: 4px; margin-top: 4px;">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                            ADAPTIVE RULES
+                        </div>
+                    ` : ''}
+                    </div>
                     ${room.ai_control_active ? `
                         <div class="ai-actions">
                             <div class="ai-action-title">
@@ -278,14 +289,14 @@ function displayRooms() {
                     </div>`}
                 </div>
                 
-                <div class="room-footer" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; gap: 8px;">
+                <div class="room-footer" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap;">
                     <button class="view-history-btn" onclick="event.stopPropagation(); showHealthHistory('${room.patient_id}', '${room.patient_name}')" title="View Health History">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="12" y1="20" x2="12" y2="10"/>
                             <line x1="18" y1="20" x2="18" y2="4"/>
                             <line x1="6" y1="20" x2="6" y2="16"/>
                         </svg>
-                        <span>View History</span>
+                        <span>History</span>
                     </button>
                     <button class="generate-report-btn" onclick="event.stopPropagation(); generatePatientReport('${room.room_id}')" title="Generate PDF Report">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -390,6 +401,42 @@ function createAssistantModal(room) {
                         </div>
                     </div>
                     <div id="gemini-live-transcript-${room.room_id}" class="gemini-live-transcript" style="display: none; margin-top: 16px; max-height: 250px; overflow-y: auto; background: rgba(0,0,0,0.25); border-radius: 10px; padding: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);"></div>
+                </div>
+                
+                <!-- Quick Voice Assistant - New Simple Implementation -->
+                <div class="quick-voice-section" style="margin: 20px; padding: 24px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 16px; box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);">
+                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+                        <div style="width: 56px; height: 56px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                <line x1="12" y1="19" x2="12" y2="23"></line>
+                                <line x1="8" y1="23" x2="16" y2="23"></line>
+                            </svg>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 700; color: white; font-size: 18px; margin-bottom: 4px; letter-spacing: -0.5px;">Quick Voice Chat</div>
+                            <div style="font-size: 13px; color: rgba(255,255,255,0.9); font-weight: 500;">Simple one-click voice assistant</div>
+                        </div>
+                        <span id="quick-voice-status-${room.room_id}" style="color: white; font-size: 12px; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-weight: 600; backdrop-filter: blur(10px);">✅ Ready</span>
+                    </div>
+                    <button id="quick-voice-btn-${room.room_id}" class="quick-voice-btn" onclick="event.stopPropagation(); startQuickVoice('${room.room_id}')" style="width: 100%; padding: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 16px rgba(0,0,0,0.15); font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                            <line x1="12" y1="19" x2="12" y2="23"></line>
+                            <line x1="8" y1="23" x2="16" y2="23"></line>
+                        </svg>
+                        <span>Quick Voice Chat</span>
+                    </button>
+                    <div style="margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.1); border-radius: 10px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 12px; color: rgba(255,255,255,0.95); line-height: 1.6; margin-bottom: 8px;">
+                            🚀 <strong>Fast & Simple:</strong> Click once to speak, get instant AI responses with voice feedback. Perfect for quick patient questions!
+                        </div>
+                        <button onclick="event.stopPropagation(); testVoiceNow()" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; margin-top: 4px;">
+                            🔊 Test Voice Now
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -679,8 +726,40 @@ async function toggleAI(roomId, isActive) {
         }
         
     } catch (error) {
-        console.error('❌ Error toggling AI:', error);
-        alert('Failed to toggle AI control');
+        console.error('[TOGGLE AI] Error:', error);
+        alert('Error toggling AI control');
+    }
+}
+
+/**
+ * Trigger adaptive AI optimization for a room
+ */
+/**
+ * Check adaptive rules status
+ */
+async function checkAdaptiveRulesStatus() {
+    try {
+        const API_BASE = window.API_BASE || '/api';
+        const response = await fetch(`${API_BASE}/ai/rules/status`, {
+            credentials: 'include'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            console.log('[ADAPTIVE RULES] Status:', data);
+            return {
+                enabled: data.adaptive_rules_enabled,
+                rulesCount: data.rules_count,
+                aiAvailable: data.ai_available
+            };
+        }
+        
+        return { enabled: false, rulesCount: 0, aiAvailable: false };
+        
+    } catch (error) {
+        console.error('[ADAPTIVE RULES] Error checking status:', error);
+        return { enabled: false, rulesCount: 0, aiAvailable: false };
     }
 }
 
@@ -1026,6 +1105,12 @@ window.initAssistant = function(roomId, roomData) {
     try {
         window.assistants[roomId] = new SmartAssistant(roomId, roomData);
         console.log('✅ Assistant initialized for room:', roomId);
+        
+        // Also initialize Quick Voice Assistant
+        if (typeof initQuickVoiceAssistant !== 'undefined') {
+            initQuickVoiceAssistant(roomId, roomData);
+            console.log('✅ Quick Voice Assistant initialized for room:', roomId);
+        }
     } catch (error) {
         console.error('Error initializing assistant for room:', roomId, error);
     }
@@ -1177,4 +1262,5 @@ window.toggleGeminiLive = function(roomId) {
 window.showRoomDetails = showRoomDetails;
 window.closeModal = closeModal;
 window.toggleAI = toggleAI;
+window.checkAdaptiveRulesStatus = checkAdaptiveRulesStatus;
 window.dismissNotification = dismissNotification;

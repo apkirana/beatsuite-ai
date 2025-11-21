@@ -1,5 +1,5 @@
 /**
- * Gemini Live API Integration
+ * Gemini Live API Integration - Fixed Version
  * Real-time bidirectional voice conversation with Gemini 2.0
  * Uses WebSocket for streaming audio communication
  */
@@ -48,34 +48,23 @@ Current Vitals:
 - Heart Rate: ${vitals.heart_rate || 'N/A'} BPM
 - Temperature: ${vitals.temperature || 'N/A'}°F
 - SpO2: ${vitals.spo2 || 'N/A'}%
-- Blood Pressure: ${vitals.blood_pressure || 'N/A'}
+- Movement Level: ${vitals.movement_level || 'N/A'}
 
-Patient Status: ${this.roomData.patient_status || 'Monitoring'}
-AI Control: ${this.roomData.ai_control_active ? 'Active' : 'Manual'}
+You provide empathetic, professional healthcare guidance. Keep responses conversational but medically accurate. 
+Ask relevant questions about symptoms, comfort, and wellbeing. Always prioritize patient safety.
 
-Your communication style:
-- Speak naturally and warmly, like a caring nurse
-- Use conversational language, contractions (I'm, they're, etc.)
-- Be reassuring when vitals are good
-- Show concern and urgency when needed
-- Keep responses concise - 1-3 sentences typically
-- Sound human, not robotic
+Current room environment:
+- Light: ${this.roomData.light_brightness || 50}% brightness, ${this.roomData.light_color || 'neutral'} tone
+- Music: ${this.roomData.music_volume || 30}% volume, ${this.roomData.music_type || 'ambient'} style
+- Temperature: ${this.roomData.room_temperature || 72}°F
 
-You can discuss:
-- Patient vital signs and their meaning
-- Current health status and comfort
-- Sleep stages and rest quality
-- Pain indicators and comfort measures
-- Room environment (lights, music, temperature)
-- General care recommendations
-
-Always prioritize patient comfort and clear communication with healthcare staff and family.`
+You can suggest environment adjustments for comfort and healing.`
             }]
         };
     }
-    
+
     /**
-     * Initialize and start Gemini Live session
+     * Start Gemini Live session
      */
     async start() {
         try {
@@ -246,7 +235,7 @@ Always prioritize patient comfort and clear communication with healthcare staff 
             this.updateUI('error', 'Microphone access required. Please allow microphone access and try again.');
         }
     }
-    
+
     /**
      * Send audio data to Gemini
      */
@@ -268,7 +257,7 @@ Always prioritize patient comfort and clear communication with healthcare staff 
             console.error('❌ Error sending audio data:', error);
         }
     }
-    
+
     /**
      * Handle messages from Gemini server
      */
@@ -317,22 +306,15 @@ Always prioritize patient comfort and clear communication with healthcare staff 
                 console.log('🔧 Tool call cancelled');
             }
             
+            // Handle tool calls (if needed for future features)
+            if (message.toolCall) {
+                console.log('🔧 Tool call:', message.toolCall);
+            }
+            
             // Handle errors
             if (message.error) {
                 console.error('❌ Server error:', message.error);
                 this.updateUI('error', `Server error: ${message.error.message || 'Unknown error'}`);
-            }
-                
-                // Show turn complete
-                if (message.serverContent.turnComplete) {
-                    console.log('✅ AI finished speaking');
-                    this.updateUI('listening', 'Your turn - speak now');
-                }
-            }
-            
-            // Handle tool calls (if needed for future features)
-            if (message.toolCall) {
-                console.log('🔧 Tool call:', message.toolCall);
             }
             
         } catch (error) {
@@ -340,7 +322,7 @@ Always prioritize patient comfort and clear communication with healthcare staff 
             this.updateUI('error', 'Error processing server response');
         }
     }
-    
+
     /**
      * Play audio response from Gemini
      */
@@ -356,6 +338,11 @@ Always prioritize patient comfort and clear communication with healthcare staff 
             // Create audio context if needed
             if (!this.audioContext) {
                 this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            // Resume if suspended
+            if (this.audioContext.state === 'suspended') {
+                await this.audioContext.resume();
             }
             
             // Decode and play audio
@@ -374,6 +361,7 @@ Always prioritize patient comfort and clear communication with healthcare staff 
             
         } catch (error) {
             console.error('❌ Error playing audio:', error);
+            this.updateUI('error', 'Audio playback error');
         }
     }
     
@@ -385,11 +373,15 @@ Always prioritize patient comfort and clear communication with healthcare staff 
         const transcriptEl = document.getElementById(`gemini-live-transcript-${this.roomId}`);
         if (transcriptEl) {
             const messageEl = document.createElement('div');
-            messageEl.className = `transcript-message ${speaker.toLowerCase()}`;
-            messageEl.innerHTML = `
-                <span class="speaker">${speaker}:</span>
-                <span class="text">${text}</span>
+            messageEl.style.cssText = `
+                padding: 6px 8px;
+                margin-bottom: 4px;
+                border-radius: 6px;
+                font-size: 12px;
+                background: ${speaker === 'AI' ? 'rgba(139, 92, 246, 0.3)' : 'rgba(59, 130, 246, 0.3)'};
+                color: white;
             `;
+            messageEl.innerHTML = `<strong>${speaker}:</strong> ${text}`;
             transcriptEl.appendChild(messageEl);
             transcriptEl.scrollTop = transcriptEl.scrollHeight;
         }
@@ -421,17 +413,21 @@ Always prioritize patient comfort and clear communication with healthcare staff 
                 case 'listening':
                     icon = '🎤';
                     color = '#3b82f6';
+                    message = message || 'Listening...';
                     break;
                 case 'speaking':
                     icon = '🔊';
                     color = '#8b5cf6';
+                    message = message || 'Speaking...';
                     break;
                 case 'error':
                     icon = '❌';
                     color = '#ef4444';
+                    message = message || 'Error';
                     break;
                 default:
                     icon = '⚪';
+                    color = '#666';
                     message = 'Inactive';
             }
             
@@ -441,15 +437,41 @@ Always prioritize patient comfort and clear communication with healthcare staff 
         
         if (buttonEl) {
             if (this.isActive) {
-                buttonEl.textContent = 'Stop Live Chat';
+                buttonEl.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <rect x="6" y="4" width="4" height="16"></rect>
+                        <rect x="14" y="4" width="4" height="16"></rect>
+                    </svg>
+                    <span>Stop Voice Chat</span>
+                `;
+                buttonEl.style.background = '#ef4444';
+                buttonEl.style.color = 'white';
                 buttonEl.classList.add('active');
             } else {
-                buttonEl.textContent = 'Start Live Chat';
+                buttonEl.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        <line x1="12" y1="19" x2="12" y2="23"></line>
+                        <line x1="8" y1="23" x2="16" y2="23"></line>
+                    </svg>
+                    <span>Start Voice Chat</span>
+                `;
+                buttonEl.style.background = 'white';
+                buttonEl.style.color = '#667eea';
                 buttonEl.classList.remove('active');
             }
         }
+        
+        // Show/hide transcript
+        const transcriptEl = document.getElementById(`gemini-live-transcript-${this.roomId}`);
+        if (transcriptEl && this.isActive) {
+            transcriptEl.style.display = 'block';
+        } else if (transcriptEl) {
+            transcriptEl.style.display = 'none';
+        }
     }
-    
+
     /**
      * Stop Gemini Live session
      */
@@ -461,7 +483,9 @@ Always prioritize patient comfort and clear communication with healthcare staff 
         // Stop media recorder
         if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
             this.mediaRecorder.stop();
-            this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            if (this.mediaRecorder.stream) {
+                this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
         }
         
         // Close WebSocket
@@ -471,7 +495,7 @@ Always prioritize patient comfort and clear communication with healthcare staff 
         
         // Close audio context
         if (this.audioContext) {
-            this.audioContext.close();
+            this.audioContext.close().catch(console.warn);
         }
         
         this.updateUI('inactive', 'Disconnected');
@@ -492,5 +516,5 @@ Always prioritize patient comfort and clear communication with healthcare staff 
 }
 
 // Export for use in other modules
-console.log('✅ GeminiLive class loaded');
+console.log('✅ GeminiLive class loaded and ready');
 window.GeminiLive = GeminiLive;

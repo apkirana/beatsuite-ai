@@ -29,6 +29,7 @@ MarkupSafe==3.0.3
 matplotlib==3.10.7
 numpy==2.3.3
 packaging==25.0
+paho-mqtt==1.6.1
 pandas==2.3.3
 pillow==11.3.0
 proto-plus==1.26.1
@@ -52,3 +53,4 @@ tzdata==2025.2
 uritemplate==4.2.0
 urllib3==2.5.0
 Werkzeug==3.0.0
+paho-mqtt
