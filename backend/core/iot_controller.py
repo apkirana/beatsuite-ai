@@ -267,7 +267,7 @@ class IoTDeviceManager:
 
 
 # Singleton instance
-iot_manager = IoTDeviceManager(device_type='philips_hue')
+iot_manager = IoTDeviceManager(light_type='philips_hue')
 
 
 def apply_ai_settings_to_room(room_id: str, ai_output: Dict) -> bool:
