@@ -77,6 +77,11 @@ personal/
 temp/
 tmp/
 
+# Health data files (contains sensitive patient information)
+backend/data/health_history.json
+health_history.json
+*/health_history.json
+
 # Old/Backup files
 old_files/
 *.bak
