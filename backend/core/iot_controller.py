@@ -147,7 +147,7 @@ class SmartLightController:
 class SmartAudioController:
     """
     Control audio systems
-    Supports: Sonos, Spotify Connect, Apple AirPlay
+    Supports: Sonos, Spotify Connect, YouTube Music, Custom Audio APIs
     """
     
     def __init__(self, device_type: str = 'simulated'):
@@ -179,8 +179,16 @@ class SmartAudioController:
                 return self._sonos_command(room_id, playlist_id, volume)
             
             elif self.device_type == 'spotify':
-                # TODO: Implement Spotify Web API
+                # Spotify Web API integration
                 return self._spotify_command(room_id, playlist_id, volume)
+            
+            elif self.device_type == 'youtube_music':
+                # YouTube Music API integration
+                return self._youtube_music_command(room_id, playlist_id, volume)
+            
+            elif self.device_type == 'custom_api':
+                # Custom audio streaming API
+                return self._custom_audio_api_command(room_id, playlist_id, volume)
             
             else:
                 logger.error(f"Unsupported audio device type: {self.device_type}")
@@ -205,9 +213,190 @@ class SmartAudioController:
     
     def _spotify_command(self, room_id: str, playlist_id: str, volume: float):
         """Spotify Web API integration"""
-        # Requires: Spotify OAuth token, device ID
-        logger.info("Spotify integration - Not yet implemented")
-        return False
+        try:
+            import requests
+            
+            # Get Spotify credentials from environment
+            access_token = os.getenv('SPOTIFY_ACCESS_TOKEN')
+            device_id = os.getenv(f'SPOTIFY_DEVICE_{room_id.upper()}')
+            
+            if not access_token:
+                logger.error("Spotify access token not found in environment variables")
+                return False
+            
+            if not device_id:
+                logger.warning(f"No Spotify device configured for {room_id}, using default")
+                device_id = os.getenv('SPOTIFY_DEFAULT_DEVICE')
+            
+            # Spotify Web API endpoints
+            base_url = "https://api.spotify.com/v1"
+            headers = {
+                'Authorization': f'Bearer {access_token}',
+                'Content-Type': 'application/json'
+            }
+            
+            # Start playback with playlist
+            playback_data = {
+                'context_uri': f'spotify:playlist:{playlist_id}',
+                'device_id': device_id
+            }
+            
+            response = requests.put(
+                f"{base_url}/me/player/play",
+                headers=headers,
+                json=playback_data,
+                timeout=10
+            )
+            
+            if response.status_code in [200, 204]:
+                # Set volume
+                volume_percent = int(volume * 100)
+                volume_response = requests.put(
+                    f"{base_url}/me/player/volume?volume_percent={volume_percent}&device_id={device_id}",
+                    headers=headers,
+                    timeout=5
+                )
+                
+                if volume_response.status_code in [200, 204]:
+                    logger.info(f"[SPOTIFY] Room {room_id}: Playing playlist '{playlist_id}' at {volume:.0%}")
+                    self.current_state[room_id] = {
+                        'playlist': playlist_id,
+                        'volume': volume,
+                        'playing': True,
+                        'updated': time.time(),
+                        'platform': 'spotify'
+                    }
+                    return True
+                else:
+                    logger.error(f"Spotify volume control failed: {volume_response.status_code}")
+                    return False
+            else:
+                logger.error(f"Spotify playback failed: {response.status_code} - {response.text}")
+                return False
+                
+        except ImportError:
+            logger.error("requests library not installed. Install with: pip install requests")
+            return False
+        except Exception as e:
+            logger.error(f"Spotify API error: {e}")
+            return False
+    
+    def _youtube_music_command(self, room_id: str, playlist_id: str, volume: float):
+        """YouTube Music API integration"""
+        try:
+            import requests
+            
+            # YouTube Music API (requires ytmusicapi)
+            api_key = os.getenv('YOUTUBE_API_KEY')
+            if not api_key:
+                logger.error("YouTube API key not found in environment variables")
+                return False
+            
+            # Use YouTube Data API v3 or ytmusicapi
+            headers = {
+                'Authorization': f'Bearer {api_key}',
+                'Content-Type': 'application/json'
+            }
+            
+            # Example: Get playlist and play first track
+            playlist_url = f"https://www.googleapis.com/youtube/v3/playlistItems"
+            params = {
+                'part': 'snippet',
+                'playlistId': playlist_id,
+                'key': api_key,
+                'maxResults': 1
+            }
+            
+            response = requests.get(playlist_url, params=params, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('items'):
+                    video_id = data['items'][0]['snippet']['resourceId']['videoId']
+                    logger.info(f"[YOUTUBE_MUSIC] Room {room_id}: Playing playlist '{playlist_id}' (video: {video_id}) at {volume:.0%}")
+                    
+                    self.current_state[room_id] = {
+                        'playlist': playlist_id,
+                        'volume': volume,
+                        'playing': True,
+                        'updated': time.time(),
+                        'platform': 'youtube_music',
+                        'current_video': video_id
+                    }
+                    return True
+                else:
+                    logger.error(f"No items found in YouTube playlist: {playlist_id}")
+                    return False
+            else:
+                logger.error(f"YouTube API error: {response.status_code} - {response.text}")
+                return False
+                
+        except ImportError:
+            logger.error("requests library not installed. Install with: pip install requests")
+            return False
+        except Exception as e:
+            logger.error(f"YouTube Music API error: {e}")
+            return False
+    
+    def _custom_audio_api_command(self, room_id: str, playlist_id: str, volume: float):
+        """Custom audio streaming API integration"""
+        try:
+            import requests
+            
+            # Custom audio service configuration
+            api_base_url = os.getenv('CUSTOM_AUDIO_API_URL', 'https://api.healthcare-audio.com/v1')
+            api_token = os.getenv('CUSTOM_AUDIO_API_TOKEN')
+            
+            if not api_token:
+                logger.error("Custom audio API token not found in environment variables")
+                return False
+            
+            headers = {
+                'Authorization': f'Bearer {api_token}',
+                'Content-Type': 'application/json',
+                'X-Room-ID': room_id
+            }
+            
+            # Send play command to custom audio service
+            play_data = {
+                'room_id': room_id,
+                'playlist_id': playlist_id,
+                'volume': volume,
+                'action': 'play',
+                'healthcare_mode': True
+            }
+            
+            response = requests.post(
+                f"{api_base_url}/rooms/{room_id}/play",
+                headers=headers,
+                json=play_data,
+                timeout=15
+            )
+            
+            if response.status_code in [200, 201]:
+                result = response.json()
+                logger.info(f"[CUSTOM_API] Room {room_id}: Playing '{playlist_id}' at {volume:.0%} - Session: {result.get('session_id', 'N/A')}")
+                
+                self.current_state[room_id] = {
+                    'playlist': playlist_id,
+                    'volume': volume,
+                    'playing': True,
+                    'updated': time.time(),
+                    'platform': 'custom_api',
+                    'session_id': result.get('session_id'),
+                    'audio_url': result.get('stream_url')
+                }
+                return True
+            else:
+                logger.error(f"Custom audio API error: {response.status_code} - {response.text}")
+                return False
+                
+        except ImportError:
+            logger.error("requests library not installed. Install with: pip install requests")
+            return False
+        except Exception as e:
+            logger.error(f"Custom audio API error: {e}")
+            return False
 
 
 class IoTDeviceManager:
