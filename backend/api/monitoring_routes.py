@@ -183,7 +183,8 @@ def get_room_data(room_id):
             },
             'ai_insights': {
                 'sleep_quality': room.get('current_ai_settings', {}).get('ai_reasoning', 'Monitoring patient comfort'),
-                'circadian_status': f"Last updated: {room.get('last_updated', 'N/A')}"
+                'circadian_status': f"Last updated: {room.get('last_updated', 'N/A')}",
+                'adaptive_rules_active': getattr(process_patient_update.__self__, 'adaptive_rules_enabled', False) if hasattr(process_patient_update, '__self__') else True
             }
         }
         
