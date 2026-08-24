@@ -4,6 +4,7 @@ Demo: Simulate IoT Devices Without External Apps
 Shows how Beat Suite AI already has everything you need for testing!
 """
 
+import os
 import requests
 import json
 import time
@@ -18,10 +19,22 @@ print()
 
 # Login first (required for API access)
 print("🔐 Step 1: Login...")
+# Credentials come from the environment so none are committed. Set them to an
+# account created by scripts/seed_users.py:
+#   export DEMO_USERNAME=admin DEMO_PASSWORD='...'
+DEMO_USERNAME = os.environ.get("DEMO_USERNAME", "admin")
+DEMO_PASSWORD = os.environ.get("DEMO_PASSWORD")
+
+if not DEMO_PASSWORD:
+    raise SystemExit(
+        "DEMO_PASSWORD is not set. Create an account with "
+        "`python scripts/seed_users.py`, then export DEMO_USERNAME and DEMO_PASSWORD."
+    )
+
 session = requests.Session()
 login_response = session.post(f"{BASE_URL}/api/auth/login", json={
-    "username": "admin",
-    "password": "admin123"
+    "username": DEMO_USERNAME,
+    "password": DEMO_PASSWORD
 })
 
 if login_response.status_code == 200:
