@@ -116,10 +116,13 @@ open http://localhost:5001
 ```
 🌐 URL: http://localhost:5001
 
-👤 Demo Credentials:
-├─ Admin:  admin   / admin123   (Full access)
-├─ Nurse:  nurse1  / nurse123   (Patient care)  
-└─ Family: family1 / family123  (View only)
+👤 Accounts (created by: python scripts/seed_users.py)
+├─ admin    (Full access)
+├─ nurse1   (Patient care)
+├─ nurse2   (Patient care)
+└─ family1  (View only)
+
+The seed script prints a generated password for each account once.
 ```
 
 ### 🎙️ **First Gemini Live Experience**
@@ -559,7 +562,7 @@ POST /api/rooms/room_101/resume
 #### Web Interface
 ```
 URL: http://localhost:5001/iot-simulator
-Login: admin / admin123
+Login: the admin account created by scripts/seed_users.py
 
 Features:
 ├─ 💡 Visual smart lights (color changing)
@@ -866,7 +869,7 @@ All API endpoints (except login) require authentication.
 POST /api/auth/login
 {
   "username": "admin",
-  "password": "admin123"
+  "password": "<the password printed by scripts/seed_users.py>"
 }
 
 # Response includes session cookie
@@ -1210,7 +1213,7 @@ pip install -r requirements.txt
 # Solution: Login first to get session cookie
 curl -X POST http://localhost:5001/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin123"}' \
+  -d '{"username":"admin","password":"'"$ADMIN_PASSWORD"'"}' \
   -c cookies.txt
 
 # Use cookies.txt in subsequent requests
