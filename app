@@ -49,10 +49,12 @@ start_server() {
     echo "🚀 Starting Flask server on http://localhost:5001"
     echo "========================================"
     echo ""
-    echo "📋 Demo Credentials:"
-    echo "  Admin:  username=admin   password=admin123"
-    echo "  Nurse:  username=nurse1  password=nurse123"
-    echo "  Family: username=family1 password=family123"
+    if [ ! -f backend/data/users.json ]; then
+        echo "⚠️  No accounts yet. Create them with:"
+        echo "     python scripts/seed_users.py"
+    else
+        echo "📋 Sign in with an account from scripts/seed_users.py"
+    fi
     echo "========================================"
     echo ""
 
