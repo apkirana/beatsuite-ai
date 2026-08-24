@@ -2,6 +2,11 @@
 Authentication routes (login, logout)
 """
 
+import os
+import time
+from collections import defaultdict
+from threading import Lock
+
 from flask import Blueprint, request, jsonify, make_response
 from backend.auth.auth_service import auth_service
 from backend.services import user_service
@@ -10,6 +15,43 @@ import logging
 logger = logging.getLogger(__name__)
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
+
+# Send cookies only over HTTPS unless explicitly disabled for local development.
+COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'true').lower() != 'false'
+
+# Throttle failed logins per client address. In-memory, so it resets on restart
+# and is per-process — good enough for a single instance, but put a real rate
+# limiter (or your load balancer's) in front of a multi-instance deployment.
+MAX_FAILED_ATTEMPTS = 5
+LOCKOUT_SECONDS = 300
+_failed_attempts = defaultdict(list)
+_attempts_lock = Lock()
+
+
+def _client_key() -> str:
+    """Identify the caller for throttling purposes."""
+    forwarded = request.headers.get('X-Forwarded-For', '')
+    if forwarded:
+        return forwarded.split(',')[0].strip()
+    return request.remote_addr or 'unknown'
+
+
+def _is_locked_out(key: str) -> bool:
+    cutoff = time.time() - LOCKOUT_SECONDS
+    with _attempts_lock:
+        recent = [t for t in _failed_attempts[key] if t > cutoff]
+        _failed_attempts[key] = recent
+        return len(recent) >= MAX_FAILED_ATTEMPTS
+
+
+def _record_failure(key: str) -> None:
+    with _attempts_lock:
+        _failed_attempts[key].append(time.time())
+
+
+def _clear_failures(key: str) -> None:
+    with _attempts_lock:
+        _failed_attempts.pop(key, None)
 
 
 @auth_bp.route('/login', methods=['POST'])
@@ -30,17 +72,35 @@ def login():
         if not username or not password:
             return jsonify({'error': 'Username and password required'}), 400
         
+        client = _client_key()
+        if _is_locked_out(client):
+            logger.warning(f"Login throttled for {client}")
+            return jsonify({
+                'error': 'Too many failed attempts. Try again later.'
+            }), 429
+        
         # Get user from service
         user_data = user_service.get_user_by_username(username)
         
-        if not user_data:
-            logger.warning(f"Login attempt with unknown username: {username}")
+        # Verify password. The same generic message and the same code path are
+        # used for an unknown username and a bad password, so the response does
+        # not reveal which usernames exist.
+        if not user_data or not auth_service.verify_password(password, user_data['password_hash']):
+            _record_failure(client)
+            logger.warning(f"Failed login attempt for username: {username}")
             return jsonify({'error': 'Invalid credentials'}), 401
         
-        # Verify password
-        if not auth_service.verify_password(password, user_data['password_hash']):
-            logger.warning(f"Failed login attempt for user: {username}")
-            return jsonify({'error': 'Invalid credentials'}), 401
+        _clear_failures(client)
+        
+        # Upgrade legacy or weak hashes now that we have the plaintext in hand.
+        if auth_service.needs_rehash(user_data['password_hash']):
+            try:
+                user_service.set_password_hash(
+                    user_data['user_id'], auth_service.hash_password(password)
+                )
+                logger.info(f"Upgraded password hash for user: {user_data['user_id']}")
+            except Exception as exc:
+                logger.error(f"Could not upgrade password hash: {exc}")
         
         # Create session
         session_token = auth_service.create_session(user_data['user_id'], user_data)
@@ -62,7 +122,7 @@ def login():
             'session_token',
             session_token,
             httponly=True,
-            secure=False,  # Set to True in production with HTTPS
+            secure=COOKIE_SECURE,
             samesite='Lax',
             max_age=8*60*60  # 8 hours
         )
@@ -90,7 +150,10 @@ def logout():
         }))
         
         # Clear cookie
-        response.set_cookie('session_token', '', expires=0)
+        response.set_cookie(
+            'session_token', '', expires=0,
+            httponly=True, secure=COOKIE_SECURE, samesite='Lax'
+        )
         
         return response
         
@@ -134,7 +197,8 @@ def check_auth():
     session_data = auth_service.get_session(session_token)
     
     is_authenticated = session_data is not None
-    logger.debug(f"Auth check: token={session_token[:20]}..., authenticated={is_authenticated}")
+    # Never log session tokens, even truncated — a prefix still narrows a search.
+    logger.debug(f"Auth check: authenticated={is_authenticated}")
     
     return jsonify({
         'authenticated': is_authenticated,
