@@ -175,11 +175,15 @@ echo "GOOGLE_API_KEY=your_actual_api_key_here" > .env
 
 ### Login Credentials
 
-| Role   | Username | Password   |
-|--------|----------|------------|
-| Admin  | admin    | admin123   |
-| Nurse  | nurse1   | nurse123   |
-| Family | family1  | family123  |
+No accounts ship with the code. Create them on the instance:
+
+```bash
+python scripts/seed_users.py
+```
+
+The script generates a random password for each role (`admin`, `nurse1`, `nurse2`, `family1`) and
+prints them **once** — save them straight into a password manager. Only salted PBKDF2 hashes are
+written to `backend/data/users.json`, which is gitignored and must stay that way.
 
 ---
 
