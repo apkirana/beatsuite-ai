@@ -86,3 +86,21 @@ health_history.json
 old_files/
 *.bak
 *.backup
+
+# Account credentials — created by scripts/seed_users.py, never committed.
+# Even salted hashes should not be public: they let an attacker brute-force
+# offline at their own pace.
+backend/data/users.json
+users.json
+
+# Runtime artefacts
+.server.pid
+*.pid
+
+# Patient and monitoring data — treat as sensitive even when synthetic,
+# because the shapes and identifiers get reused with real data.
+backend/data/patients.json
+backend/data/memories.json
+backend/data/room_monitoring.json
+backend/data/daily_reports.json
+backend/data/notifications.json
