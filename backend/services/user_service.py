@@ -4,15 +4,33 @@ Handles all database operations for user data
 """
 import json
 import os
-import hashlib
 from datetime import datetime
 from typing import List, Dict, Optional
 
+from backend.auth import password as password_utils
+
 DATA_FILE = os.path.join(os.path.dirname(__file__), '../data/users.json')
 
+
 def hash_password(password: str) -> str:
-    """Hash password using SHA-256"""
-    return hashlib.sha256(password.encode()).hexdigest()
+    """Hash a password with a per-user random salt (PBKDF2-HMAC-SHA256)."""
+    return password_utils.hash_password(password)
+
+
+def set_password_hash(user_id: str, password_hash: str) -> bool:
+    """
+    Replace the stored hash for one user, leaving every other field alone.
+
+    Used to transparently upgrade a legacy unsalted hash after the user has
+    successfully authenticated with it.
+    """
+    users = load_users()
+    for user in users:
+        if user.get('user_id') == user_id:
+            user['password_hash'] = password_hash
+            save_users(users)
+            return True
+    return False
 
 def load_users() -> List[Dict]:
     """Load all users from JSON file"""
