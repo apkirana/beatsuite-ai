@@ -2,7 +2,7 @@
 
 **AI-Powered Healthcare Monitoring with Real-time Voice Conversation & Smart Environment Control**
 
-[![Deploy Status](https://img.shields.io/badge/Deploy-GCP%20Cloud%20Run-blue)](https://beatsuite-675304702130.us-central1.run.app)
+![Deploy target](https://img.shields.io/badge/Deploy-GCP%20Cloud%20Run-blue)
 [![AI Status](https://img.shields.io/badge/AI-Gemini%202.0%20Flash-green)](https://ai.google.dev)
 [![Voice Chat](https://img.shields.io/badge/Voice-Gemini%20Live-purple)](https://ai.google.dev/gemini-api/docs/live)
 
@@ -10,14 +10,15 @@
 
 ---
 
-## 🚀 Live Demo
+## 🚀 About this prototype
 
-**Production URL**: https://beatsuite-675304702130.us-central1.run.app
+Beat Suite AI is a **research and demonstration prototype** exploring how a conversational AI assistant
+could support ward monitoring — real-time vitals, voice interaction, and environment control in one
+interface. It is not a medical device, it has not been clinically validated, and it must not be
+connected to real patient data. See [SECURITY.md](SECURITY.md).
 
-**Demo Credentials:**
-- **Admin**: `admin` / `admin123` 
-- **Nurse**: `nurse1` / `nurse123`
-- **Family**: `family1` / `family123`
+Run it locally with the Quick Start below. **No accounts ship with the code** — you create your own
+when you set the app up, so there are no shared credentials to leak.
 
 ---
 
@@ -87,17 +88,24 @@ git clone https://github.com/apkirana/beatsuite-ai.git
 cd beatsuite-ai
 
 # 2. Setup environment
-echo "GOOGLE_API_KEY=your_actual_api_key_here" > .env
+cp .env.template .env
+# Then edit .env and set:
+#   GOOGLE_API_KEY  - your Gemini key
+#   SECRET_KEY      - python -c "import secrets; print(secrets.token_urlsafe(32))"
+# The app refuses to start without SECRET_KEY unless FLASK_ENV=development.
 
-# 3. Start server (auto-creates venv, installs deps)
+# 3. Create your accounts (passwords are generated and shown once)
+python scripts/seed_users.py
+
+# 4. Start server (auto-creates venv, installs deps)
 ./app start
 
-# 4. Open browser
+# 5. Open browser
 open http://localhost:5001
 ```
 
 ### First Steps
-1. **Login**: Use `admin` / `admin123`
+1. **Login**: use the `admin` account and the password printed by `scripts/seed_users.py`
 2. **View Dashboard**: See patient rooms with real-time vitals
 3. **Try AI Assistant**: Click any room → AI Assistant button
 4. **Test Gemini Live**: Click "Start Voice Chat" → Grant mic permission → Speak naturally!
@@ -221,6 +229,22 @@ Components:
 - **Healing Audio**: Binaural beats, nature sounds, 432Hz frequencies  
 - **Automated Control**: Based on sleep stages and pain detection
 - **Manual Override**: Staff can take control when needed
+
+---
+
+## 🔒 Security
+
+No credentials are stored in this repository. Accounts are created locally by
+`scripts/seed_users.py`, which generates random passwords and prints them once. Passwords are stored as
+salted PBKDF2-HMAC-SHA256 (600,000 iterations), verified in constant time, and failed logins are
+throttled per client address.
+
+**If you cloned this repository before this change**, an earlier `users.json` containing unsalted
+SHA-256 hashes was committed and is still in the git history. Treat every password that ever existed
+under that scheme as public and rotate it.
+
+[SECURITY.md](SECURITY.md) covers safe setup, how credentials are handled, and the known limitations of
+this prototype — including that sessions are in-memory, there is no CSRF protection, and no audit trail.
 
 ---
 
