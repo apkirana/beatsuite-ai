@@ -49,11 +49,33 @@ def create_app():
     )
     
     # Configuration
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+    #
+    # SECRET_KEY signs session data — a known key lets anyone forge a session.
+    # Outside development we refuse to start rather than fall back to a default.
+    secret_key = os.environ.get('SECRET_KEY')
+    is_development = os.environ.get('FLASK_ENV', 'production').lower() == 'development'
+    if not secret_key:
+        if not is_development:
+            raise RuntimeError(
+                "SECRET_KEY is not set. Generate one with "
+                "`python -c \"import secrets; print(secrets.token_urlsafe(32))\"` "
+                "and set it in the environment before starting the app."
+            )
+        secret_key = 'dev-only-key-not-for-deployment'
+        logger.warning("SECRET_KEY unset — using an insecure development key.")
+    app.config['SECRET_KEY'] = secret_key
     app.config['JSON_SORT_KEYS'] = False
     
-    # Enable CORS
-    CORS(app, supports_credentials=True)
+    # Enable CORS.
+    # supports_credentials=True sends cookies cross-origin, so the allowed
+    # origins must be an explicit list — never "*" — or any site could drive
+    # the API as a logged-in user.
+    allowed_origins = [
+        origin.strip()
+        for origin in os.environ.get('ALLOWED_ORIGINS', 'http://localhost:5001').split(',')
+        if origin.strip()
+    ]
+    CORS(app, supports_credentials=True, origins=allowed_origins)
     
     # Register consolidated blueprints
     # Authentication & User Management
@@ -143,19 +165,19 @@ app = create_app()
 
 
 if __name__ == '__main__':
+    # Debug mode exposes the Werkzeug console — never enable it on a deployment.
+    debug = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+    port = int(os.environ.get('PORT', 5001))
+
     logger.info("="*60)
-    logger.info("Beat Suite AI Dashboard - Production Mode")
+    logger.info("Beat Suite AI Dashboard")
     logger.info("="*60)
-    logger.info("Access at: http://localhost:5001")
+    logger.info(f"Listening on port {port} (debug={debug})")
+    logger.info("No accounts exist until you run: python scripts/seed_users.py")
     logger.info("="*60)
-    logger.info("\n📋 Demo Credentials:")
-    logger.info("  Admin:  username=admin   password=admin123")
-    logger.info("  Nurse:  username=nurse1  password=nurse123")
-    logger.info("  Family: username=family1 password=family123")
-    logger.info("="*60)
-    
+
     app.run(
         host='0.0.0.0',
-        port=5001,
-        debug=True
+        port=port,
+        debug=debug
     )
