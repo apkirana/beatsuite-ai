@@ -3,12 +3,12 @@ Authentication Service
 Handles user login, logout, and session management
 """
 
-import hashlib
 import secrets
 from datetime import datetime, timedelta
 from typing import Optional, Dict
 import logging
-from backend.services import user_service
+
+from backend.auth import password as password_utils
 
 logger = logging.getLogger(__name__)
 
@@ -21,12 +21,16 @@ class AuthService:
         self.session_timeout = timedelta(hours=8)
     
     def hash_password(self, password: str) -> str:
-        """Hash password using SHA-256 (use bcrypt in production)"""
-        return hashlib.sha256(password.encode()).hexdigest()
-    
+        """Hash a password with a per-user random salt (PBKDF2-HMAC-SHA256)."""
+        return password_utils.hash_password(password)
+
     def verify_password(self, password: str, hashed: str) -> bool:
-        """Verify password against hash"""
-        return self.hash_password(password) == hashed
+        """Verify a password in constant time, accepting legacy hashes."""
+        return password_utils.verify_password(password, hashed)
+
+    def needs_rehash(self, hashed: str) -> bool:
+        """True if this stored hash should be upgraded on next successful login."""
+        return password_utils.needs_rehash(hashed)
     
     def create_session(self, user_id: str, user_data: Dict) -> str:
         """Create a new session and return session token"""
